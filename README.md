@@ -68,12 +68,16 @@ graph TD
 
 ### **1. Extração de Dados**
 
-O script `riot_api_producer.py` consulta a API da Riot Games e envia informações sobre partidas para o tópico Kafka `summoners`. Cada mensagem inclui informações como ID da partida, nome do invocador, e estatísticas do jogo.
+O script `riot_api_producer.py` consulta a API da Riot Games e esta agendado para executar de hora em hora, onde coleta os IDs do top 50 da região do braisl e envia informações sobre partidas para o tópico Kafka `summoners`.
+
+O script streaming  `xxxx.py` recebe o ID do jogador e buscas os IDs de das ultimas X partidas e envia esses IDs para o topico Kafka  `summoners_details`
+
+O script streaming  `xxxx.py` recebe o ID da partida e buscas as informações da partida e envia o json para o topico Kafka  `match`
 
 ### **2. Processamento de Dados**
 
 O script `consume_kafka_to_lake.py`:
-- Consome mensagens do Kafka em tempo real.
+- Consome mensagens do Kafka em tempo real no topico  `match`.
 - Escreve os dados brutos na camada `bronze` do Data Lake em formato Parquet.
 - Assegura tolerância a falhas com checkpoints.
 
