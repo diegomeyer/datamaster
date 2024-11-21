@@ -1,0 +1,183 @@
+version: '3'
+services:
+  # Hadoop Namenode
+  hadoop-namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-namenode
+    environment:
+      - CLUSTER_NAME=test
+      - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
+      - HDFS_CONF_dfs_namenode_name_dir=file:///hadoop/dfs/name
+    volumes:
+      - hadoop-namenode:/hadoop/dfs/name
+    ports:
+      - "9870:9870" # HDFS Web UI
+      - "8020:8020" # HDFS Namenode
+    networks:
+      - hadoop-spark-kafka-net
+    depends_on:
+      - hadoop-datanode
+
+  # Hadoop Datanode
+  hadoop-datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-datanode
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
+      - HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
+    volumes:
+      - hadoop-datanode:/hadoop/dfs/data
+    networks:
+      - hadoop-spark-kafka-net
+
+
+  # Spark Master
+  spark-master:
+    image: bde2020/spark-master:3.1.2-hadoop3.2
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_JARS_PACKAGES=org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2
+    ports:
+      - "8080:8080" # Spark Master Web UI
+    networks:
+      - hadoop-spark-kafka-net
+
+  # Spark Worker
+  spark-worker:
+    image: bde2020/spark-worker:3.1.2-hadoop3.2
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+    networks:
+      - hadoop-spark-kafka-net
+    depends_on:
+      - spark-master
+
+  # Kafka
+  kafka:
+    image: wurstmeister/kafka:2.12-2.5.0
+    container_name: kafka
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENER=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_LISTENERS=PLAINTEXT://kafka:9092
+    ports:
+      - "9092:9092" # Kafka broker port
+    networks:
+      - hadoop-spark-kafka-net
+    depends_on:
+      - zookeeper
+
+  # Zookeeper (Kafka dependency)
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181" # Zookeeper client port
+    networks:
+      - hadoop-spark-kafka-net
+
+  # Jupyter Notebook with PySpark
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    volumes:
+      - ./notebooks:/home/jovyan/work # Monta um volume para notebooks locais
+    ports:
+      - "8888:8888" # Jupyter Notebook port
+    networks:
+      - hadoop-spark-kafka-net
+    depends_on:
+      - spark-master
+    command: start-notebook.sh --NotebookApp.token=''
+
+  # PostgreSQL Database for Airflow
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # PostgreSQL port
+    networks:
+      - hadoop-spark-kafka-net
+
+  # Airflow Scheduler and Webserver
+  airflow:
+    image: apache/airflow:2.10.2
+    container_name: airflow
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__FERNET_KEY=kCPeTCXJbjVp-f0_xnLOv5P0gUhZCWeyCFc-dRn3Z70=
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
+      - airflow_data:/airflow
+    ports:
+      - "8081:8080" # Airflow Web UI
+    networks:
+      - hadoop-spark-kafka-net
+    depends_on:
+      - postgres
+      - spark-master
+      - kafka
+    command: >
+      bash -c "
+      pip install kafka-python &&
+      airflow db init &&
+      airflow users create --username admin --password admin --firstname Admin --lastname Admin --role Admin --email admin@example.com &&
+      airflow scheduler &
+      airflow webserver"
+
+    # Produtor Kafka para consumir dados da API da Riot Games
+  riot-kafka-summoner_details:
+    build:
+      context: .
+      dockerfile: Dockerfile-riot-api
+    container_name: riot-api-summoner-detail
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - API_KEY="RGAPI-2a9a2a74-3d4f-4394-84eb-9bd1bc3381ca"
+    depends_on:
+      - kafka
+#    volumes:
+#      - ./riot:/app
+    command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_summoner_details.py" ]
+    networks:
+      - hadoop-spark-kafka-net
+
+  riot-kafka-matchs:
+    build:
+      context: .
+      dockerfile: Dockerfile-riot-api
+    container_name: riot-api-matchs
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - API_KEY="RGAPI-2a9a2a74-3d4f-4394-84eb-9bd1bc3381ca"
+    depends_on:
+      - kafka
+#    volumes:
+#      - ./riot:/app
+    command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_matchs.py" ]
+    networks:
+      - hadoop-spark-kafka-net
+
+volumes:
+  hadoop-namenode:
+  hadoop-datanode:
+  airflow_data:
+  postgres_data:
+
+networks:
+  hadoop-spark-kafka-net:
+    driver: bridge
