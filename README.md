@@ -41,10 +41,7 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 | **Kafka**         | Sistema de mensageria para ingestão de dados em tempo real. |
 | **PySpark**       | Processamento distribuído de dados.               |
 | **HDFS**          | Armazenamento em Data Lake com suporte a grandes volumes. |
-| **Prometheus**    | Coleta de métricas para monitoramento.            |
-| **Grafana**       | Visualização de métricas em dashboards.           |
-| **Elasticsearch** | Armazenamento e indexação de logs.                |
-| **Kibana**        | Análise e visualização de logs.                   |
+| **Airflow**       | Schedular Jobs |
 | **Docker Compose**| Orquestração dos serviços.                        |
 
 **Fluxo de Dados**:
@@ -56,10 +53,6 @@ graph TD
     PySpark -->|Camada Bronze| HDFS
     HDFS -->|Camada Silver| PySpark
     PySpark -->|Camada Gold| HDFS
-    Kafka -->|Métricas| Prometheus
-    Prometheus --> Grafana
-    PySpark -->|Logs| Elasticsearch
-    Elasticsearch --> Kibana
 ```
 
 ---
