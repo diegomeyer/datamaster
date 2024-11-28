@@ -1,0 +1,66 @@
+<configuration>
+  <!-- Hive Metastore Configuration -->
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:postgresql://postgres:5432/hive</value>
+    <description>JDBC connect string for a JDBC metastore.</description>
+  </property>
+
+  <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>org.postgresql.Driver</value>
+    <description>Driver class name for the metastore database.</description>
+  </property>
+U
+  <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>hive</value>
+    <description>Metastore database username.</description>
+  </property>
+
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>hive</value>
+    <description>Metastore database password.</description>
+  </property>
+
+  <property>
+    <name>hive.metastore.uris</name>
+    <value>thrift://hive-metastore:9083</value>
+    <description>URI for the Hive Metastore.</description>
+  </property>
+
+  <!-- Hadoop Integration -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://hadoop-namenode:8020</value>
+    <description>Default filesystem for Hadoop.</description>
+  </property>
+
+  <!-- Warehouse Directory -->
+  <property>
+    <name>hive.metastore.warehouse.dir</name>
+    <value>/user/hive/warehouse</value>
+    <description>Location of default database for the warehouse.</description>
+  </property>
+
+  <!-- Execution Engine -->
+  <property>
+    <name>hive.execution.engine</name>
+    <value>mr</value>
+    <description>Execution engine for Hive (e.g., mr, tez, or spark).</description>
+  </property>
+
+  <!-- Security Configuration (Optional) -->
+  <property>
+    <name>hive.server2.authentication</name>
+    <value>NOSASL</value>
+    <description>Authentication type. NOSASL means no authentication.</description>
+  </property>
+
+  <property>
+    <name>hive.server2.enable.doAs</name>
+    <value>true</value>
+    <description>Allow the HiveServer2 process to impersonate the client user.</description>
+  </property>
+</configuration>

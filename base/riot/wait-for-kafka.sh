@@ -11,4 +11,5 @@ done
 
 echo "Kafka está disponível - executando comando"
 echo $cmd
+sleep 30
 exec $cmd

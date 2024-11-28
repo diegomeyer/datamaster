@@ -21,15 +21,21 @@ def send_kafka_message(summoners):
         bootstrap_servers='kafka:9092',  # Nome do serviço Kafka no docker-compose e a porta padrão
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
-    for summoner in summoners['entries']:
-        message = {
-            'timestamp': datetime.utcnow().isoformat(),
-            'summonerId': summoner['summonerId']
-        }
-        # Enviando a mensagem para o tópico 'test_topic'
-        producer.send('summoners', value=message)
-        producer.flush()  # Garante que a mensagem é enviada imediatamente
-    producer.close()
+    print(summoners)
+    try:
+        for summoner in summoners['entries']:
+            print(summoner)
+            message = {
+                'timestamp_summoner': datetime.utcnow().isoformat(),
+                'summonerId': summoner['summonerId']
+            }
+            # Enviando a mensagem para o tópico 'test_topic'
+            producer.send('summoners', value=message)
+            producer.flush()  # Garante que a mensagem é enviada imediatamente
+        producer.close()
+    except Exception as e:
+        print(e)
+
 
 
 def get_challegens():

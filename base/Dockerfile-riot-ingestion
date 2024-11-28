@@ -1,0 +1,8 @@
+FROM jupyter/pyspark-notebook:latest
+
+USER root
+RUN apt-get update && apt-get install -y netcat-traditional
+WORKDIR /app
+COPY ./riot /app
+
+RUN pip install kafka-python pyspark
