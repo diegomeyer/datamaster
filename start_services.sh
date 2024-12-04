@@ -19,19 +19,19 @@ wait_for_container kafka
 
 # Passo 3: Criar tópicos no Kafka
 echo "Criando tópicos no Kafka..."
-#docker exec -it kafka kafka-topics.sh --delete --topic summoners --bootstrap-server kafka:9092
-#docker exec -it kafka kafka-topics.sh --delete --topic summoner_details --bootstrap-server kafka:9092
-#docker exec -it kafka kafka-topics.sh --delete --topic matchs --bootstrap-server kafka:9092
+#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic summoners --bootstrap-server kafka:9092"
+#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic summoner_details --bootstrap-server kafka:9092"
+#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic matchs --bootstrap-server kafka:9092"
 
-docker exec -it kafka kafka-topics.sh --create --topic summoners --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
-docker exec -it kafka kafka-topics.sh --create --topic summoner_details --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
-docker exec -it kafka kafka-topics.sh --create --topic matchs --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic summoners --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic summoner_details --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic matchs --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
 
 
 echo "Tópico 'summoners' criado com sucesso!"
 
 # Passo 4: Listar todos os tópicos para confirmar
 echo "Listando todos os tópicos no Kafka:"
-docker exec -it kafka kafka-topics.sh --list --bootstrap-server kafka:9092
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --list --bootstrap-server kafka:9092"
 
 echo "Todos os serviços foram iniciados e o tópico foi criado com sucesso."

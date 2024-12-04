@@ -31,7 +31,7 @@ Necessário ter docker e docker compose configurado
 #### **3 - Configurando o Ambiente**
    - Execute o comando 
 ```
-   make start
+   ./start_services.sh;
 ``` 
 ---
 
@@ -155,6 +155,7 @@ Caso existise dados sensiveis poderiamos utilizar os metodos:
 4. **Segurança**:
    - Configurar autenticação e autorização no Kafka.
    - Criptografar os dados sensíveis armazenados no Data Lake.
+   - Chaves de API ser armazenadas em um cofre de senhas.
 
 ---
 
