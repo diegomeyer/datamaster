@@ -70,6 +70,7 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 | **PySpark**        | Processamento distribuído de dados.                         |
 | **HDFS**           | Armazenamento em Data Lake com suporte a grandes volumes.   |
 | **Jupyther**       | Ambiente para exploração dos dados                          |
+| **Airflow**       | Schedular Jobs |
 | **Prometheus**     | Coleta de métricas para monitoramento.                      |
 | **Grafana**        | Visualização de métricas em dashboards.                     |
 | **Docker Compose** | Orquestração dos serviços.                                  |
