@@ -6,12 +6,16 @@ services:
     container_name: hadoop-namenode
     environment:
       - CLUSTER_NAME=datamaster
+      - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7074:/jmx_exporter/hadoop-jmx-config.yaml
     volumes:
       - hadoop-namenode:/hadoop/dfs/name
       - ./configs/hadoop:/etc/hadoop
+      - ./configs/jmx_exporter:/jmx_exporter/
     ports:
       - "9870:9870" # HDFS Web UI
       - "8020:8020" # HDFS Namenode
+      - "7074:7074" # JMX Exporter port
+      - "9864:9864"
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -24,9 +28,14 @@ services:
     environment:
       - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
       - HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
+      - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7075:/jmx_exporter/hadoop-jmx-config.yaml
     volumes:
       - hadoop-datanode:/hadoop/dfs/data
       - ./configs/hadoop:/etc/hadoop
+      - ./configs/jmx_exporter:/jmx_exporter
+    ports:
+        - "7075:7075" # JMX Exporter port
+        - "9865:9864"
     networks:
       - hadoop-spark-kafka-net
 
@@ -42,12 +51,17 @@ services:
       - SPARK_MASTER_PORT=7077
       - SPARK_MASTER_WEBUI_PORT=8080
       - PATH=/spark/bin:$PATH
-      - SPARK_JARS_PACKAGES=org.apache.spark:spark-hive_2.12:3.3.0
-      - SPARK_CONF_spark.sql.catalogImplementation=hive
-      - SPARK_CONF_spark.hadoop.hive.metastore.uris=thrift://hive-metastore:9083
+      - SPARK_CONF_spark.ui.prometheus.enabled=true
+      - SPARK_CONF_spark.metrics.conf=/etc/metrics/spark-metrics.properties
+      - SPARK_DAEMON_JAVA_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7072:/jmx_exporter/spark-jmx-config.yaml
     ports:
       - "8080:8080" # Spark Master UI
       - "7077:7077" # Spark Master
+      - "7072:7072" # JMX Exporter port
+    volumes:
+      - ./configs/jmx_exporter:/jmx_exporter
+      - ./configs/metrics.properties:/spark/conf/metrics.properties
+      - ./configs/metrics:/etc/metrics
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -64,7 +78,13 @@ services:
       - SPARK_CONF_spark.hadoop.yarn.resourcemanager.address=hadoop-resourcemanager:8032
       - SPARK_CONF_spark.sql.catalogImplementation=hive
       - SPARK_CONF_spark.hadoop.hive.metastore.uris=thrift://hive-metastore:9083
-
+      - SPARK_DAEMON_JAVA_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7073:/jmx_exporter/spark-jmx-config.yaml
+    ports:
+      - "7073:7073" # JMX Exporter port
+    volumes:
+      - ./configs/jmx_exporter:/jmx_exporter
+      - ./configs/metrics.properties:/spark/conf/metrics.properties
+      - ./configs/metrics:/etc/metrics
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -81,8 +101,13 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OPTS: >
+        -javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7071:/jmx_exporter/kafka-jmx-config.yaml
     ports:
       - "9092:9092" # Porta do Kafka
+      - "7071:7071" # JMX Exporter port
+    volumes:
+      - ./configs/jmx_exporter:/jmx_exporter
     depends_on:
       - zookeeper
     networks:
@@ -94,6 +119,21 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181" # Zookeeper client port
+    networks:
+      - hadoop-spark-kafka-net
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka-exporter
+    environment:
+      - KAFKA_SERVER=kafka:9092 # Endereço do broker Kafka
+      - KAFKA_EXPORTER_LOG_LEVEL=info
+      - KAFKA_EXPORTER_GROUP_FILTER=.*
+      - KAFKA_EXPORTER_TOPIC_FILTER=.*
+    ports:
+      - "9308:9308" # Porta para expor métricas do Kafka Exporter
+    depends_on:
+      - kafka
     networks:
       - hadoop-spark-kafka-net
 
@@ -207,6 +247,31 @@ services:
     networks:
       - hadoop-spark-kafka-net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/consumer_kafka_to_lake.py" ]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" # Prometheus UI
+    networks:
+      - hadoop-spark-kafka-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000" # Grafana UI
+    networks:
+      - hadoop-spark-kafka-net
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
 
 volumes:
   hadoop-namenode:

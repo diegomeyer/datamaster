@@ -1,0 +1,13 @@
+rules:
+  - pattern: kafka.producer<type=ProducerMetrics, name=(.+)><>Count
+    name: kafka_producer_$1_count
+    type: COUNTER
+    help: "Kafka producer metric for $1"
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=BytesOutPerSec><>Count
+    name: kafka_bytes_out_per_sec
+    type: COUNTER
+    help: "Bytes sent per second by Kafka brokers"
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=BytesInPerSec><>Count
+    name: kafka_bytes_in_per_sec
+    type: COUNTER
+    help: "Bytes received per second by Kafka brokers"

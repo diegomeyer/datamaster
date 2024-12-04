@@ -9,7 +9,7 @@ KAFKA_BOOTSTRAP_SERVER = 'kafka:9092'
 TOPIC_CONSUMER = 'summoners'
 TOPIC_PRODUCER = 'summoner_details'
 # LOL_API_URL = 'https://REGION.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}'
-API_KEY = 'INSERT API LOL API KEY' # Substitua pela sua chave de API da Riot Games
+API_KEY = 'CHAVE_API' # Substitua pela sua chave de API da Riot Games
 BASE_URL = 'https://americas.api.riotgames.com'
 
 
