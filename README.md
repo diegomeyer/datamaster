@@ -112,10 +112,10 @@ O script [consumer_kafka_to_lake.py](base/riot/consumer_kafka_to_lake.py):
 - Escreve os dados brutos e as metricas de cada etapa na camada `bronze` do Data Lake em formato Parquet.
 - Assegura tolerância a falhas com checkpoints.
 
-O script [bronze_to_silver.py](base/airflow/dags/bronze_to_silver.py)
+O script [bronze_to_silver.py](base/airflow/dags/lol_bronze_to_silver.py)
 - DAG que consome a camada bronze e extrai e estrutura as informações mais relevantes.
 
-O script [silver_to_gold.py](base/airflow/dags/silver_to_gold.py)
+O script [silver_to_gold.py](base/airflow/dags/lol_silver_to_gold.py)
 - DAG que consome a camada silver e realiza agregações.
 
 ### **3. Estrutura do Data Lake**
