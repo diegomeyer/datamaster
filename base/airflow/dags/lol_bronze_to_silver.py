@@ -18,7 +18,7 @@ with DAG(
     default_args=default_args,
     description='Processa os dados da camada Bronze para Silver diariamente',
     schedule_interval='0 2 * * *',  # Executa diariamente às 2h da manhã
-    start_date=datetime(2023, 11, 22),
+    start_date=datetime(2024, 11, 1),
     catchup=False
 ) as dag:
 
@@ -40,7 +40,8 @@ with DAG(
             silver_path_games,
             silver_path_participants,
             silver_path_teams_stats,
-            silver_path_teams_bans
+            silver_path_teams_bans,
+            '{{ ds }}'
         ],
         executor_cores=4,
         executor_memory='4g',

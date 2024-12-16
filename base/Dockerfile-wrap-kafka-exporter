@@ -1,0 +1,4 @@
+FROM danielqsj/kafka-exporter
+COPY ./configs/wait-for-kafka-sh.sh /wait-for-kafka-sh.sh
+
+ENTRYPOINT ["./wait-for-kafka-sh.sh"]

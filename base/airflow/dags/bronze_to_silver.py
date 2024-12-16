@@ -1,17 +1,20 @@
 import sys
 from pyspark.sql.functions import from_unixtime, to_date
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode, from_json, row_number
+from pyspark.sql.functions import col, explode, from_json, row_number,current_date
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, ArrayType
 from pyspark.sql.window import Window
 
 # # Lê os argumentos do Airflow
+
 bronze_path = sys.argv[1]
 silver_path_games = sys.argv[2]
 silver_path_participants = sys.argv[3]
 silver_path_teams_stats = sys.argv[4]
 silver_path_teams_bans = sys.argv[5]
+partition_date = sys.argv[6]
 
+print(partition_date)
 # Criar a SparkSession
 spark = SparkSession.builder \
     .appName("Transformação Bronze para Silver") \
@@ -21,7 +24,7 @@ spark = SparkSession.builder \
 
 # Carregar a camada Bronze
 bronze_path = bronze_path
-bronze_df = spark.read.parquet(bronze_path)
+bronze_df = spark.read.parquet(f"{bronze_path}/partition_date={partition_date}")
 
 # Definir o schema do JSON com base na estrutura dos dados
 # Definir o schema do JSON com base na estrutura dos dados
@@ -97,7 +100,7 @@ json_schema = StructType([
 ])
 # Parsear o JSON da coluna json_data
 parsed_df = bronze_df.withColumn("match_details", from_json(col("match_details"), json_schema)).select("match_details.*")
-parsed_df = parsed_df.withColumn("partition_date", to_date(from_unixtime(col("info.gameCreation") / 1000)))
+parsed_df = parsed_df.withColumn("partition_date", current_date())
 
 match_summary_df = parsed_df.select(
     col("info.gameId").alias("match_id"),

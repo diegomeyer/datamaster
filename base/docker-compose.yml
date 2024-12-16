@@ -15,7 +15,6 @@ services:
       - "9870:9870" # HDFS Web UI
       - "8020:8020" # HDFS Namenode
       - "7074:7074" # JMX Exporter port
-      - "9864:9864"
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -35,7 +34,6 @@ services:
       - ./configs/jmx_exporter:/jmx_exporter
     ports:
         - "7075:7075" # JMX Exporter port
-        - "9865:9864"
     networks:
       - hadoop-spark-kafka-net
 
@@ -130,12 +128,17 @@ services:
       - KAFKA_EXPORTER_LOG_LEVEL=info
       - KAFKA_EXPORTER_GROUP_FILTER=.*
       - KAFKA_EXPORTER_TOPIC_FILTER=.*
+      - KAFKA_EXPORTER_RETRY_BACKOFF="500ms"
+      - KAFKA_EXPORTER_RETRY_MAX_BACKOFF="30s"
     ports:
       - "9308:9308" # Porta para expor métricas do Kafka Exporter
     depends_on:
       - kafka
     networks:
       - hadoop-spark-kafka-net
+    volumes:
+      - ./configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
+    entrypoint: ["/bin/sh", "/wait-for-kafka.sh", "kafka_exporter"]
 
   # Jupyter Notebook with PySpark
   jupyter:
@@ -263,6 +266,10 @@ services:
     container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
+      - ./configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
+      - ./configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
       - "3000:3000" # Grafana UI
     networks:

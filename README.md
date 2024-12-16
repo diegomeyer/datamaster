@@ -33,6 +33,8 @@ Necessário ter docker e docker compose configurado
 ```
    ./start_services.sh;
 ``` 
+
+Com isso todos os serviços devem estar sendo executados sem problemas
 ---
 
 ## **II. Arquitetura de Solução e Arquitetura Técnica**
@@ -67,10 +69,11 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 | Tecnologia         | Função                                                      |
 |--------------------|-------------------------------------------------------------|
 | **Kafka**          | Sistema de mensageria para ingestão de dados em tempo real. |
+| **Kafka Exporter** | Export as metricas do Kafka para o Prometheus               |
 | **PySpark**        | Processamento distribuído de dados.                         |
 | **HDFS**           | Armazenamento em Data Lake com suporte a grandes volumes.   |
 | **Jupyther**       | Ambiente para exploração dos dados                          |
-| **Airflow**       | Schedular Jobs |
+| **Airflow**        | Schedular Jobs                                              |
 | **Prometheus**     | Coleta de métricas para monitoramento.                      |
 | **Grafana**        | Visualização de métricas em dashboards.                     |
 | **Docker Compose** | Orquestração dos serviços.                                  |
@@ -82,7 +85,7 @@ graph TD
     API_Riot[API Riot Games] -->|Partidas| Kafka
     Kafka --> PySpark
     PySpark -->|Camada Bronze| HDFS
-    HDFS -->|Camada Silver| PySpark
+    PySpark -->|Camada Silver| HDFS
     PySpark -->|Camada Gold| HDFS
     Kafka -->|Métricas| Prometheus
     PySpark -->|Métricas| Prometheus

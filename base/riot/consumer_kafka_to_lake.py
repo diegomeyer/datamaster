@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json
+from pyspark.sql.functions import col, from_json, current_date
 import json
 from pyspark.sql.types import *
 # Inicializar a sessão Spark
@@ -34,22 +34,26 @@ df_parsed = df.select(
     from_json(col("value").cast("string"), schema).alias("data")
 ).select("data.*")
 
-df_parsed.printSchema()
+# Adiciona a coluna de partição com a data atual
+df_partitioned = df_parsed.withColumn("date", current_date())
+
 # df_parsed.show(1,False)
 # Seleciona somente as colunas necessárias
-df_final = df_parsed.select(
+df_final = df_partitioned.select(
     "timestamp_summoner",
     "timestamp_summoner_details",
     "timestamp_match",
-    "match_details"
+    "match_details",
+    "date"
 )
 
 # Escrever os dados brutos na camada Bronze do Data Lake
-query = df_final.writeStream \
+query = (df_final.writeStream \
     .outputMode("append") \
     .format("parquet") \
     .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/matchs") \
+    .partitionBy("date") \
     .option("path", BRONZE_PATH) \
-    .start()
+    .start())
 
 query.awaitTermination()
