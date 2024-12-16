@@ -82,7 +82,7 @@ graph TD
     API_Riot[API Riot Games] -->|Partidas| Kafka
     Kafka --> PySpark
     PySpark -->|Camada Bronze| HDFS
-    HDFS -->|Camada Silver| PySpark
+    PySpark -->|Camada Silver| HDFS
     PySpark -->|Camada Gold| HDFS
     Kafka -->|Métricas| Prometheus
     PySpark -->|Métricas| Prometheus
