@@ -1,26 +1,6 @@
 from airflow.models import Connection
 from airflow import settings
 
-
-# Define a conexão Spark
-def create_spark_default_connection():
-    conn_id = "spark_default"
-    existing_conn = (
-        settings.Session().query(Connection)
-        .filter(Connection.conn_id == conn_id)
-        .first()
-    )
-
-    if existing_conn:
-        print(f"Conexão '{conn_id}' já existe, nada a configurar.")
-        return
-
-    spark_conn = Connection(
-        conn_id=conn_id,
-        conn_type="spark",
-        host="from airflow.models import Connection
-from airflow import settings
-
 def overwrite_spark_default_connection():
     # Defina os parâmetros da conexão Spark
     conn_id = "spark_default"
@@ -55,17 +35,9 @@ def overwrite_spark_default_connection():
 
     session.commit()
 
-# Executa a função para sobrescrever a conexão
-overwrite_spark_default_connection()",  # Altere para o host apropriado, como 'local' ou URL do cluster Spark
-        extra='{"queue": "default"}'  # Configure parâmetros extras, se necessário
-    )
-
-    session = settings.Session()
-    session.add(spark_conn)
-    session.commit()
-    print(f"Conexão '{conn_id}' configurada com sucesso.")
-
+    # Executa a função para sobrescrever a conexão
+overwrite_spark_default_connection()
 
 # Configura a conexão
 if __name__ == "__main__":
-    create_spark_default_connection()
+    overwrite_spark_default_connection()
