@@ -1,4 +1,19 @@
 #!/bin/bash
+# Variáveis
+SEARCH_STRING="CHAVE_API"
+REPLACE_STRING="$1"
+PROJECT_DIR="."
+
+# Verificação do argumento
+if [ -z "$REPLACE_STRING" ]; then
+    echo "Uso: $0 <REPLACE_STRING>"
+    exit 1
+fi
+
+# Substituição
+echo "Substituindo '${SEARCH_STRING}' por '${REPLACE_STRING}' no diretório '${PROJECT_DIR}'..."
+find "$PROJECT_DIR" -type f -exec sed -i "s/${SEARCH_STRING}/${REPLACE_STRING}/g" {} +
+echo "Substituição concluída com sucesso."
 
 # Função para checar se um contêiner está rodando
 function wait_for_container() {

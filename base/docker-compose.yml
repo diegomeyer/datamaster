@@ -188,7 +188,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
       - airflow_data:/airflow
-      - ./configs/setup_connections.py:/opt/setup_connections.py
+#      - ./configs/setup_connections.py:/opt/setup_connections.pyspark-notebook
     ports:
       - "8082:8080" # Airflow Web UI
       - "8125:8125" # Metrics
@@ -203,8 +203,7 @@ services:
       airflow db migrate &&
       airflow connections create-default-connections &&
       airflow users create --username admin --password admin --firstname Admin --lastname Admin --role Admin --email admin@example.com &&
-      airflow scheduler &
-      airflow webserver"
+      airflow scheduler & sleep 5 && airflow webserver"
 
   # Produtor Kafka para consumir dados da API da Riot Games
   riot-kafka-summoner_details:
