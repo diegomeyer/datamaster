@@ -72,21 +72,6 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 
 ![arquitetura.jpg](arquitetura.jpg)
 
-**Fluxo de Dados**:
-
-```mermaid
-graph TD
-    API_Riot[API Riot Games] -->|Partidas| Kafka
-    Kafka --> PySpark
-    PySpark -->|Camada Bronze| HDFS
-    PySpark -->|Camada Silver| HDFS
-    PySpark -->|Camada Gold| HDFS
-    Kafka -->|Métricas| Prometheus
-    PySpark -->|Métricas| Prometheus
-    HDFS -->|Métricas| Prometheus
-    Prometheus --> Grafana
-```
-
 ---
 
 ## **III. Explicação sobre o Case Desenvolvido**
@@ -148,6 +133,7 @@ Caso existise dados sensiveis poderiamos utilizar os metodos:
 
 3. **Governança de Dados**:
    - Adicionar políticas de retenção em cada camada.
+   - Adicionar expurgo dos dados
 
 4. **Segurança**:
    - Configurar autenticação e autorização no Kafka.
