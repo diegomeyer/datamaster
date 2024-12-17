@@ -78,6 +78,10 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 | **Grafana**        | Visualização de métricas em dashboards.                     |
 | **Docker Compose** | Orquestração dos serviços.                                  |
 
+**Arquitetura**:
+
+!(![arquitetura.png](arquitetura.png))
+
 **Fluxo de Dados**:
 
 ```mermaid
