@@ -80,7 +80,7 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 
 **Arquitetura**:
 
-!(![arquitetura.png](arquitetura.png))
+!(![arquitetura.jpg](arquitetura.jpg))
 
 **Fluxo de Dados**:
 
