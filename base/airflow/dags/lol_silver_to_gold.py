@@ -1,6 +1,6 @@
 import sys
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, avg, count, sum, max, min
+from pyspark.sql.functions import col, avg, count, sum, max, min,current_date
 
 # Lê os argumentos do Airflow
 silver_path_games = sys.argv[1]
@@ -20,10 +20,10 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Carregar as tabelas Silver
-games_df = spark.read.parquet(f"{silver_path_games}/partition_date={partition_date}")
-participants_df = spark.read.parquet(f"{silver_path_participants}/partition_date={partition_date}")
-teams_stats_df = spark.read.parquet(f"{silver_path_teams_stats}/partition_date={partition_date}")
-teams_bans_df = spark.read.parquet(f"{silver_path_teams_bans}/partition_date={partition_date}")
+games_df = spark.read.parquet(f"{silver_path_games}/partition_date={partition_date}").withColumn("partition_date", current_date())
+participants_df = spark.read.parquet(f"{silver_path_participants}/partition_date={partition_date}").withColumn("partition_date", current_date())
+teams_stats_df = spark.read.parquet(f"{silver_path_teams_stats}/partition_date={partition_date}").withColumn("partition_date", current_date())
+teams_bans_df = spark.read.parquet(f"{silver_path_teams_bans}/partition_date={partition_date}").withColumn("partition_date", current_date())
 
 # Tabela 1: Resumo de partidas (match_summary)
 match_summary_df = games_df.select(
