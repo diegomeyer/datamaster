@@ -35,7 +35,7 @@ df_parsed = df.select(
 ).select("data.*")
 
 # Adiciona a coluna de partição com a data atual
-df_partitioned = df_parsed.withColumn("date", current_date())
+df_partitioned = df_parsed.withColumn("partition_date", current_date())
 
 # df_parsed.show(1,False)
 # Seleciona somente as colunas necessárias
@@ -44,7 +44,7 @@ df_final = df_partitioned.select(
     "timestamp_summoner_details",
     "timestamp_match",
     "match_details",
-    "date"
+    "partition_date"
 )
 
 # Escrever os dados brutos na camada Bronze do Data Lake
@@ -52,7 +52,7 @@ query = (df_final.writeStream \
     .outputMode("append") \
     .format("parquet") \
     .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/matchs") \
-    .partitionBy("date") \
+    .partitionBy("partition_date") \
     .option("path", BRONZE_PATH) \
     .start())
 

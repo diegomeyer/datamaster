@@ -44,7 +44,8 @@ with DAG(
             silver_path_teams_bans,
             gold_path_match_summary,
             gold_path_player_performance,
-            gold_path_team_performance
+            gold_path_team_performance,
+            '{{ ds }}'
 
         ],
         executor_cores=4,

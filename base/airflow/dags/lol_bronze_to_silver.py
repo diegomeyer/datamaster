@@ -27,7 +27,6 @@ bronze_path = bronze_path
 bronze_df = spark.read.parquet(f"{bronze_path}/partition_date={partition_date}")
 
 # Definir o schema do JSON com base na estrutura dos dados
-# Definir o schema do JSON com base na estrutura dos dados
 json_schema = StructType([
     StructField("metadata", StructType([
         StructField("dataVersion", StringType(), True),

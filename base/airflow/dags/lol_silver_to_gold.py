@@ -10,6 +10,7 @@ silver_path_teams_bans = sys.argv[4]
 gold_path_match_summary = sys.argv[5]
 gold_path_player_performance = sys.argv[6]
 gold_path_team_performance = sys.argv[7]
+partition_date = sys.argv[8]
 
 # Criar a SparkSession
 spark = SparkSession.builder \
@@ -19,10 +20,10 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Carregar as tabelas Silver
-games_df = spark.read.parquet(silver_path_games)
-participants_df = spark.read.parquet(silver_path_participants)
-teams_stats_df = spark.read.parquet(silver_path_teams_stats)
-teams_bans_df = spark.read.parquet(silver_path_teams_bans)
+games_df = spark.read.parquet(f"{silver_path_games}/partition_date={partition_date}")
+participants_df = spark.read.parquet(f"{silver_path_participants}/partition_date={partition_date}")
+teams_stats_df = spark.read.parquet(f"{silver_path_teams_stats}/partition_date={partition_date}")
+teams_bans_df = spark.read.parquet(f"{silver_path_teams_bans}/partition_date={partition_date}")
 
 # Tabela 1: Resumo de partidas (match_summary)
 match_summary_df = games_df.select(

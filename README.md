@@ -18,23 +18,13 @@ O objetivo do case é desenvolver uma solução de engenharia de dados para cons
    - Gere uma nova chave da API
 
 #### **2 - Configurando o Ambiente**
-
-Se o sistema operacional for linux ou mac - utilize o seguinte comando substituindo a CHAVE_API pela chave gerada
-``` 
-make replace REPLACE_STRING=CHAVE_API
-```
-
-Se utilizar windows utilize o comando reclace (ctrl + shift + r) para substituir CHAVE_API pela chave gerada 
-
-Necessário ter docker e docker compose configurado
-
-#### **3 - Configurando o Ambiente**
    - Execute o comando 
 ```
-   ./start_services.sh;
+   ./start_services.sh RGAPI-406e3ffe-ca00-4181-9720-620342322f6f
 ``` 
 
 Com isso todos os serviços devem estar sendo executados sem problemas
+
 ---
 
 ## **II. Arquitetura de Solução e Arquitetura Técnica**

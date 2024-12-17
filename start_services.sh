@@ -49,4 +49,7 @@ echo "Tópico 'summoners' criado com sucesso!"
 echo "Listando todos os tópicos no Kafka:"
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --list --bootstrap-server kafka:9092"
 
+wait_for_container hadoop-datanode
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -chmod -R 777 /datalake"
+
 echo "Todos os serviços foram iniciados e o tópico foi criado com sucesso."
