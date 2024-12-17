@@ -1,3 +1,4 @@
+![dm.jpg](dm.jpg)
 O repositório "datamaster" é um projeto do programa Data Master organizado pela F1rst Santander. 
 
 # **Relatório Técnico**
