@@ -1,4 +1,8 @@
-![dm.jpg](dm.jpg)
+
+<p align="center" width="100%">
+    <img width="33%" src="https://github.com/diegomeyer/datamaster/blob/develop/dm.jpg">
+</p>
+
 O repositório "datamaster" é um projeto do programa Data Master organizado pela F1rst Santander. 
 
 # **Relatório Técnico**
