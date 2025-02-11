@@ -1,7 +1,7 @@
 import sys
 from pyspark.sql.functions import from_unixtime, to_date
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode, from_json, row_number,current_date
+from pyspark.sql.functions import col, explode, from_json, row_number,current_date,sha2
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, ArrayType
 from pyspark.sql.window import Window
 
@@ -113,7 +113,7 @@ match_summary_df = parsed_df.select(
     col("info.gameStartTimestamp").alias("game_start_timestamp"),
     col("info.gameEndTimestamp").alias("game_end_timestamp"),
     col("partition_date")
-)
+).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
 match_summary_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_games)
 
@@ -150,7 +150,7 @@ participants_df = parsed_df.select(
     col("participant.goldEarned").alias("gold_earned"),
     col("participant.win"),
     col("partition_date")
-)
+).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
 
 participants_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_participants)
@@ -168,7 +168,7 @@ team_stats_df = parsed_df.select(
     col("team.objectives.dragon.kills").alias("dragon_kills"),
     col("team.objectives.tower.kills").alias("tower_kills"),
     col("partition_date")
-)
+).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
 team_stats_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_stats)
 
@@ -187,6 +187,6 @@ team_bans_df = parsed_df.select(
     col("ban.pickTurn").alias("ban_turn"),
     col("ban.championId").alias("champion_id"),
     col("partition_date")
-)
+).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
 team_bans_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_bans)
