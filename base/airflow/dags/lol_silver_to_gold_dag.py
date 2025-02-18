@@ -45,7 +45,7 @@ with DAG(
             gold_path_match_summary,
             gold_path_player_performance,
             gold_path_team_performance,
-            '{{ ds }}'
+            datetime.now().strftime('%Y-%m-%d')
 
         ],
         executor_cores=4,
