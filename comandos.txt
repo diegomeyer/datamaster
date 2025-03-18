@@ -1,0 +1,9 @@
+#kafka
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --list --bootstrap-server kafka:9092"
+
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic summoners --bootstrap-server kafka:9092 --from-beginning"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic summoner_details --bootstrap-server kafka:9092 --from-beginning"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic matchs --bootstrap-server kafka:9092 --from-beginning"
+
+#hdfs
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -chmod -R 777 /datalake"
