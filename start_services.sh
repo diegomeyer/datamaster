@@ -55,4 +55,3 @@ docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -mkdir /d
 docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -chmod -R 777 /datalake"
 
 echo "Todos os serviços foram iniciados e o tópico foi criado com sucesso."
-unset HADOOP_OPTS && hdfs dfs -ls /
