@@ -3,6 +3,7 @@
 SEARCH_STRING="CHAVE_API"
 REPLACE_STRING="$1"
 PROJECT_DIR="."
+ESCAPED_REPLACE_STRING=$(printf '%s\n' "$REPLACE_STRING" | sed 's:[\\/&]:\\&:g')
 
 # Verificação do argumento
 if [ -z "$REPLACE_STRING" ]; then
@@ -12,7 +13,7 @@ fi
 
 # Substituição
 echo "Substituindo '${SEARCH_STRING}' por '${REPLACE_STRING}' no diretório '${PROJECT_DIR}'..."
-find "$PROJECT_DIR" -type f -exec sed -i "s/${SEARCH_STRING}/${REPLACE_STRING}/g" {} +
+LC_ALL=C find "$PROJECT_DIR" -type f ! -name "$(basename "$0")" -exec sed -i "" "s/${SEARCH_STRING}/${ESCAPED_REPLACE_STRING}/g" {} +
 echo "Substituição concluída com sucesso."
 
 # Função para checar se um contêiner está rodando
