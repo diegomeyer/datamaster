@@ -12,8 +12,19 @@ if [ -z "$REPLACE_STRING" ]; then
 fi
 
 # Substituição
-echo "Substituindo '${SEARCH_STRING}' por '${REPLACE_STRING}' no diretório '${PROJECT_DIR}'..."
-LC_ALL=C find "$PROJECT_DIR" -type f ! -name "$(basename "$0")" -exec sed -i "" "s/${SEARCH_STRING}/${ESCAPED_REPLACE_STRING}/g" {} +
+
+# Detectar sistema operacional para definir a flag correta do sed
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS usa `-i ""`
+    SED_COMMAND="sed -i \"\""
+else
+    # Linux usa `-i`
+    SED_COMMAND="sed -i"
+fi
+
+# Executar a substituição ignorando o próprio script
+LC_ALL=C find "$PROJECT_DIR" -type f ! -name "$(basename "$0")" -exec $SED_COMMAND "s/${SEARCH_STRING}/${ESCAPED_REPLACE_STRING}/gI" {} +
+
 echo "Substituição concluída com sucesso."
 
 # Função para checar se um contêiner está rodando
