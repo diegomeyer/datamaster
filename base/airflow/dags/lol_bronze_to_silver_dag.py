@@ -41,7 +41,7 @@ with DAG(
             silver_path_participants,
             silver_path_teams_stats,
             silver_path_teams_bans,
-            '{{ ds }}'
+            datetime.now().strftime('%Y-%m-%d')
         ],
         executor_cores=4,
         executor_memory='4g',
