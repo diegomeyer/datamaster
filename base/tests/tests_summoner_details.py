@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+
 from ..riot.kafka_summoner_details import SummonerDetail
 
 class TestSummonerFunctions(unittest.TestCase):

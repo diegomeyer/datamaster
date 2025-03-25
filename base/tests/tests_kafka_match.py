@@ -1,7 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from kafka import KafkaConsumer, KafkaProducer
-import json
+
 from ..riot.kafka_matchs import Matchs
 
 
