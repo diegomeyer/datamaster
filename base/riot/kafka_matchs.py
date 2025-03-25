@@ -63,7 +63,7 @@ class Matchs:
                     self.producer.send(TOPIC_PRODUCER, value=dict_detail)
                     print(f"Enviado detalhes do da partida para o topico '{TOPIC_PRODUCER}'")
                 print("Esperando o timer")
-                time.sleep(0.8)
+                time.sleep(2)
         except Exception as e:
             print(f"Erro ao processar mensagem: {e}")
 

@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
 
+
 # Argumentos padrão do DAG
 default_args = {
     'owner': 'airflow',
@@ -17,7 +18,7 @@ with DAG(
     dag_id='lol_silver_to_gold',
     default_args=default_args,
     description='Processa os dados da camada Bronze para Silver diariamente',
-    schedule_interval='0 3 * * *',  # Executa diariamente às 2h da manhã
+    schedule_interval=None,
     start_date=datetime(2024, 11, 22),
     catchup=False
 ) as dag:

@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
-
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 # Argumentos padrão do DAG
 default_args = {
     'owner': 'airflow',
@@ -21,7 +21,12 @@ with DAG(
     start_date=datetime(2024, 11, 1),
     catchup=False
 ) as dag:
-
+    # Sensor para esperar a DAG anterior finalizar
+    disparar_silver_to_gold = TriggerDagRunOperator(
+        task_id='disparar_silver_to_gold',
+        trigger_dag_id='lol_silver_to_gold',  # DAG que será acionada
+        wait_for_completion=True,  # Se True, espera a DAG chamada finalizar
+    )
     # Caminhos de entrada e saída
     bronze_path = "hdfs://hadoop-namenode:8020/datalake/bronze/matchs"
     silver_path_participants = "hdfs://hadoop-namenode:8020/datalake/silver/participants"
@@ -50,4 +55,4 @@ with DAG(
         verbose=True,
     )
 
-    process_bronze_to_silver
+    process_bronze_to_silver >> disparar_silver_to_gold
