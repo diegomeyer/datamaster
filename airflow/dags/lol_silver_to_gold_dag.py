@@ -1,7 +1,8 @@
 from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+
+
 # Argumentos padrão do DAG
 default_args = {
     'owner': 'airflow',
@@ -14,39 +15,39 @@ default_args = {
 
 # Definição do DAG
 with DAG(
-    dag_id='lol_bronze_to_silver',
+    dag_id='lol_silver_to_gold',
     default_args=default_args,
     description='Processa os dados da camada Bronze para Silver diariamente',
-    schedule_interval='0 2 * * *',  # Executa diariamente às 2h da manhã
-    start_date=datetime(2024, 11, 1),
+    schedule_interval='0 3 * * *',
+    start_date=datetime(2024, 11, 22),
     catchup=False
 ) as dag:
-    # Sensor para esperar a DAG anterior finalizar
-    disparar_silver_to_gold = TriggerDagRunOperator(
-        task_id='disparar_silver_to_gold',
-        trigger_dag_id='lol_silver_to_gold',  # DAG que será acionada
-        wait_for_completion=True,  # Se True, espera a DAG chamada finalizar
-    )
+
     # Caminhos de entrada e saída
-    bronze_path = "hdfs://hadoop-namenode:8020/datalake/bronze/matchs"
     silver_path_participants = "hdfs://hadoop-namenode:8020/datalake/silver/participants"
     silver_path_teams_stats = "hdfs://hadoop-namenode:8020/datalake/silver/teams_stats"
     silver_path_games = "hdfs://hadoop-namenode:8020/datalake/silver/games"
     silver_path_teams_bans = "hdfs://hadoop-namenode:8020/datalake/silver/teams_bans"
+    gold_path_match_summary = "hdfs://hadoop-namenode:8020/datalake/gold/match_summary"
+    gold_path_player_performance = "hdfs://hadoop-namenode:8020/datalake/gold/player_performance"
+    gold_path_team_performance = "hdfs://hadoop-namenode:8020/datalake/gold/team_performance"
 
     # Task para executar o script PySpark
-    process_bronze_to_silver = SparkSubmitOperator(
-        task_id='process_bronze_to_silver',
-        application='/opt/airflow/dags/lol_bronze_to_silver.py',  # Caminho do script PySpark
-        name='Process Bronze to Silver',
+    process_silver_to_gold = SparkSubmitOperator(
+        task_id='process_silver_to_gold',
+        application='/opt/airflow/dags/lol_silver_to_gold.py',  # Caminho do script PySpark
+        name='Process Silver to Gold',
         conn_id='spark_default',  # Conexão Spark configurada no Airflow
         application_args=[
-            bronze_path,
             silver_path_games,
             silver_path_participants,
             silver_path_teams_stats,
             silver_path_teams_bans,
+            gold_path_match_summary,
+            gold_path_player_performance,
+            gold_path_team_performance,
             datetime.now().strftime('%Y-%m-%d')
+
         ],
         executor_cores=4,
         executor_memory='4g',
@@ -55,4 +56,4 @@ with DAG(
         verbose=True,
     )
 
-    process_bronze_to_silver >> disparar_silver_to_gold
+    process_silver_to_gold

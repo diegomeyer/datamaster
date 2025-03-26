@@ -38,7 +38,7 @@ function wait_for_container() {
 
 # Passo 1: Subir os serviços com Docker Compose
 echo "Iniciando todos os serviços com Docker Compose..."
-docker compose -f base/docker-compose.yml up --build -d
+docker compose -f docker-compose.yml up --build -d
 
 # Passo 2: Esperar o Kafka iniciar completamente
 echo "Aguardando o Kafka iniciar..."
@@ -46,10 +46,6 @@ wait_for_container kafka
 
 # Passo 3: Criar tópicos no Kafka
 echo "Criando tópicos no Kafka..."
-#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic summoners --bootstrap-server kafka:9092"
-#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic summoner_details --bootstrap-server kafka:9092"
-#docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --delete --topic matchs --bootstrap-server kafka:9092"
-
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic summoners --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic summoner_details --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic matchs --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"

@@ -3,6 +3,7 @@ FROM jupyter/pyspark-notebook:latest
 USER root
 RUN apt-get update && apt-get install -y netcat-traditional
 WORKDIR /app
-COPY ./riot /app
+COPY ./riot_ingestion /app
+COPY ./base/configs/wait-for-kafka.sh /app/wait-for-kafka.sh
 
 RUN pip install kafka-python pyspark

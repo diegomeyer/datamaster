@@ -20,10 +20,10 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Carregar as tabelas Silver
-games_df = spark.read.parquet(f"{silver_path_games}/partition_date={partition_date}").withColumn("partition_date", current_date())
-participants_df = spark.read.parquet(f"{silver_path_participants}/partition_date={partition_date}").withColumn("partition_date", current_date())
-teams_stats_df = spark.read.parquet(f"{silver_path_teams_stats}/partition_date={partition_date}").withColumn("partition_date", current_date())
-teams_bans_df = spark.read.parquet(f"{silver_path_teams_bans}/partition_date={partition_date}").withColumn("partition_date", current_date())
+games_df = spark.read.parquet(f"{silver_path_games}/partition_date={partition_date}").withColumn("partition_date", current_date()).dropDuplicates()
+participants_df = spark.read.parquet(f"{silver_path_participants}/partition_date={partition_date}").withColumn("partition_date", current_date()).dropDuplicates()
+teams_stats_df = spark.read.parquet(f"{silver_path_teams_stats}/partition_date={partition_date}").withColumn("partition_date", current_date()).dropDuplicates()
+teams_bans_df = spark.read.parquet(f"{silver_path_teams_bans}/partition_date={partition_date}").withColumn("partition_date", current_date()).dropDuplicates()
 
 # Tabela 1: Resumo de partidas (match_summary)
 match_summary_df = games_df.select(
@@ -40,7 +40,7 @@ match_summary_df = games_df.select(
     "partition_date"
 )
 
-match_summary_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_match_summary)
+match_summary_df.coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_match_summary)
 
 # Tabela 2: Desempenho dos jogadores (player_performance)
 player_performance_df = participants_df.groupBy("match_id", "participant_id", "champion_id", "champion_name", "team_id", "partition_date") \
@@ -57,7 +57,7 @@ player_performance_df = participants_df.groupBy("match_id", "participant_id", "c
         max("win").alias("win_status")
     )
 
-player_performance_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_player_performance)
+player_performance_df.coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_player_performance)
 
 # Tabela 3: Desempenho do time (team_performance)
 team_performance_df = teams_stats_df.groupBy("match_id", "team_id", "partition_date") \
@@ -68,7 +68,7 @@ team_performance_df = teams_stats_df.groupBy("match_id", "team_id", "partition_d
         sum("tower_kills").alias("total_tower_kills")
     )
 
-team_performance_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_team_performance)
+team_performance_df.coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(gold_path_team_performance)
 
 # Exibir sucesso
 print("Camada Gold criada com sucesso!")

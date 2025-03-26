@@ -115,7 +115,7 @@ match_summary_df = parsed_df.select(
     col("partition_date")
 ).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
-match_summary_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_games)
+match_summary_df.dropDuplicates().coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_games)
 
 participant_window = Window.partitionBy("match_id").orderBy(col("participant.championId"))
 
@@ -153,7 +153,7 @@ participants_df = parsed_df.select(
 ).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
 
-participants_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_participants)
+participants_df.dropDuplicates().coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_participants)
 
 
 team_stats_df = parsed_df.select(
@@ -170,7 +170,7 @@ team_stats_df = parsed_df.select(
     col("partition_date")
 ).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
-team_stats_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_stats)
+team_stats_df.dropDuplicates().coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_stats)
 
 team_bans_df = parsed_df.select(
     col("info.gameId").alias("match_id"),
@@ -189,4 +189,4 @@ team_bans_df = parsed_df.select(
     col("partition_date")
 ).withColumn("match_id", sha2(col("match_id").cast("string"), 256))
 
-team_bans_df.dropDuplicates().write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_bans)
+team_bans_df.dropDuplicates().coalesce(1).write.mode("overwrite").partitionBy("partition_date").parquet(silver_path_teams_bans)

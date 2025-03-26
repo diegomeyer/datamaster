@@ -83,23 +83,23 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 
 ### **1. Extração de Dados**
 
-O script [get_summoners_br.py](base/airflow/dags/get_summoners_br.py) consulta a API da Riot Games e esta agendado para executar de hora em hora, onde coleta os IDs do top 3 da região do brasil e envia informações sobre partidas para o tópico Kafka `summoners`.
+O script [get_summoners_br.py](airflow/dags/get_summoners_br.py) consulta a API da Riot Games e esta agendado para executar de hora em hora, onde coleta os IDs do top 3 da região do brasil e envia informações sobre partidas para o tópico Kafka `summoners`.
 
-O script streaming [kafka_summoner_details.py](base/riot/kafka_summoner_details.py) recebe o ID do jogador e buscas os IDs de das ultimas 3 partidas e envia esses IDs para o topico Kafka  `summoners_details`
+O script streaming [kafka_summoner_details.py](riot_summoners_details/kafka_summoner_details.py) recebe o ID do jogador e buscas os IDs de das ultimas 3 partidas e envia esses IDs para o topico Kafka  `summoners_details`
 
-O script streaming [kafka_matchs.py](base/riot/kafka_matchs.py) recebe o ID da partida e buscas as informações da partida e envia o json para o topico Kafka  `matchs`
+O script streaming [kafka_matchs.py](riot_matchs/kafka_matchs.py) recebe o ID da partida e buscas as informações da partida e envia o json para o topico Kafka  `matchs`
 
 ### **2. Processamento de Dados**
 
-O script [consumer_kafka_to_lake.py](base/riot/consumer_kafka_to_lake.py):
+O script [consumer_kafka_to_lake.py](riot_ingestion/consumer_kafka_to_lake.py):
 - Consome mensagens do Kafka em tempo real no topico  `match`.
 - Escreve os dados brutos e as metricas de cada etapa na camada `bronze` do Data Lake em formato Parquet.
 - Assegura tolerância a falhas com checkpoints.
 
-O script [bronze_to_silver.py](base/airflow/dags/lol_bronze_to_silver.py)
+O script [bronze_to_silver.py](airflow/dags/lol_bronze_to_silver.py)
 - DAG que consome a camada bronze e extrai e estrutura as informações mais relevantes.
 
-O script [silver_to_gold.py](base/airflow/dags/lol_silver_to_gold.py)
+O script [silver_to_gold.py](airflow/dags/lol_silver_to_gold.py)
 - DAG que consome a camada silver e realiza agregações.
 
 ### **3. Estrutura do Data Lake**

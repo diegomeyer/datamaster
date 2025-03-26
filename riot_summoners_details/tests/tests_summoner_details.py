@@ -1,6 +1,6 @@
 import unittest
 
-from ..riot.kafka_summoner_details import SummonerDetail
+from riot_summoners_details.kafka_summoner_details import SummonerDetail
 
 class TestSummonerFunctions(unittest.TestCase):
 

@@ -48,12 +48,13 @@ df_final = df_partitioned.select(
 )
 
 # Escrever os dados brutos na camada Bronze do Data Lake
-query = (df_final.writeStream \
-    .outputMode("append") \
+query = (df_final.repartition(1).writeStream \
     .format("parquet") \
+    .option("path", BRONZE_PATH) \
     .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/matchs") \
     .partitionBy("partition_date") \
-    .option("path", BRONZE_PATH) \
+    .trigger(processingTime="10 minutes") \
+    .outputMode("append") \
     .start())
 
 query.awaitTermination()

@@ -9,8 +9,8 @@ services:
       - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7074:/jmx_exporter/hadoop-jmx-config.yaml
     volumes:
       - hadoop-namenode:/hadoop/dfs/name
-      - ./configs/hadoop:/etc/hadoop
-      - ./configs/jmx_exporter:/jmx_exporter/
+      - ./base/configs/hadoop:/etc/hadoop
+      - ./base/configs/jmx_exporter:/jmx_exporter/
     ports:
       - "9870:9870" # HDFS Web UI
       - "8020:8020" # HDFS Namenode
@@ -30,8 +30,8 @@ services:
       - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7075:/jmx_exporter/hadoop-jmx-config.yaml
     volumes:
       - hadoop-datanode:/hadoop/dfs/data
-      - ./configs/hadoop:/etc/hadoop
-      - ./configs/jmx_exporter:/jmx_exporter
+      - ./base/configs/hadoop:/etc/hadoop
+      - ./base/configs/jmx_exporter:/jmx_exporter
     ports:
         - "7075:7075" # JMX Exporter port
     networks:
@@ -57,9 +57,9 @@ services:
       - "7077:7077" # Spark Master
       - "7072:7072" # JMX Exporter port
     volumes:
-      - ./configs/jmx_exporter:/jmx_exporter
-      - ./configs/metrics.properties:/spark/conf/metrics.properties
-      - ./configs/metrics:/etc/metrics
+      - ./base/configs/jmx_exporter:/jmx_exporter
+      - ./base/configs/metrics.properties:/spark/conf/metrics.properties
+      - ./base/configs/metrics:/etc/metrics
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -80,9 +80,9 @@ services:
     ports:
       - "7073:7073" # JMX Exporter port
     volumes:
-      - ./configs/jmx_exporter:/jmx_exporter
-      - ./configs/metrics.properties:/spark/conf/metrics.properties
-      - ./configs/metrics:/etc/metrics
+      - ./base/configs/jmx_exporter:/jmx_exporter
+      - ./base/configs/metrics.properties:/spark/conf/metrics.properties
+      - ./base/configs/metrics:/etc/metrics
     networks:
       - hadoop-spark-kafka-net
     depends_on:
@@ -105,7 +105,7 @@ services:
       - "9092:9092" # Porta do Kafka
       - "7071:7071" # JMX Exporter port
     volumes:
-      - ./configs/jmx_exporter:/jmx_exporter
+      - ./base/configs/jmx_exporter:/jmx_exporter
     depends_on:
       - zookeeper
     networks:
@@ -137,7 +137,7 @@ services:
     networks:
       - hadoop-spark-kafka-net
     volumes:
-      - ./configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
+      - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
     entrypoint: ["/bin/sh", "/wait-for-kafka.sh", "kafka_exporter"]
 
   # Jupyter Notebook with PySpark
@@ -147,7 +147,7 @@ services:
     environment:
       - SPARK_MASTER=spark://spark-master:7077
     volumes:
-      - ./notebooks:/home/jovyan/work # Monta um volume para notebooks locais
+      - ./base/notebooks:/home/jovyan/work # Monta um volume para notebooks locais
     ports:
       - "8888:8888" # Jupyter Notebook port
     networks:
@@ -174,8 +174,7 @@ services:
   # Airflow Scheduler and Webserver
   airflow:
     build:
-      context: .
-      dockerfile: Dockerfile-aiflow-spark
+      dockerfile: airflow/Dockerfile-aiflow-spark
     container_name: airflow
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -188,7 +187,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
       - airflow_data:/airflow
-      - ./configs/setup_connections.py:/opt/setup_connections.py
+      - ./base/configs/setup_connections.py:/opt/setup_connections.py
     ports:
       - "8082:8080" # Airflow Web UI
       - "8125:8125" # Metrics
@@ -209,9 +208,8 @@ services:
   # Produtor Kafka para consumir dados da API da Riot Games
   riot-kafka-summoner_details:
     build:
-      context: .
-      dockerfile: Dockerfile-riot-api
-    container_name: riot-api-summoner-detail
+      dockerfile: riot_summoners_details/Dockerfile-riot-summoners-detail
+    container_name: riot_summoners_details
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
@@ -222,9 +220,8 @@ services:
 
   riot-kafka-matchs:
     build:
-      context: .
-      dockerfile: Dockerfile-riot-api
-    container_name: riot-api-matchs
+      dockerfile: riot_matchs/Dockerfile-riot-matchs
+    container_name: riot_matchs
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
@@ -235,9 +232,8 @@ services:
 
   spark-consumer-kafka-to-lake:
     build:
-      context: .
-      dockerfile: Dockerfile-riot-ingestion
-    container_name: spark-consumer
+      dockerfile: riot_ingestion/Dockerfile-riot-ingestion
+    container_name: riot_ingestion
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
@@ -255,7 +251,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./base/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090" # Prometheus UI
     networks:
@@ -266,10 +262,10 @@ services:
     container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-      - ./configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
-      - ./configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
-      - ./configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./base/configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./base/configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
+      - ./base/configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
+      - ./base/configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
       - "3000:3000" # Grafana UI
     networks:

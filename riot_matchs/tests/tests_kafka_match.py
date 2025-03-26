@@ -1,6 +1,6 @@
 import unittest
 
-from ..riot.kafka_matchs import Matchs
+from riot_matchs.kafka_matchs import Matchs
 
 
 class TestMatchs(unittest.TestCase):
