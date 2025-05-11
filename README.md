@@ -91,7 +91,7 @@ O script streaming [kafka_matchs.py](riot_matchs/kafka_matchs.py) recebe o ID da
 
 ### **2. Processamento de Dados**
 
-O script [consumer_kafka_to_lake.py](riot_ingestion/consumer_kafka_to_lake.py):
+O script [consumer_kafka_to_lake.py](instagram_ingestion/kafka_to_bronze.py):
 - Consome mensagens do Kafka em tempo real no topico  `match`.
 - Escreve os dados brutos e as metricas de cada etapa na camada `bronze` do Data Lake em formato Parquet.
 - Assegura tolerância a falhas com checkpoints.
