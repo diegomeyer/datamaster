@@ -260,7 +260,7 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=9yJ4LSnGW8ZYpIk-ySm7x6Udva2G9MB2DveCCrqx6Jg=
       - AIRFLOW__OPENLINEAGE__DEBUG_MODE=True
       - AIRFLOW__ELASTICSEARCH_CONFIGS__VERIFY_CERTS=False
-      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
     volumes:
       - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
       - airflow_data:/airflow
