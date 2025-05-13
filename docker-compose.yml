@@ -1,22 +1,6 @@
 version: '3'
 services:
-  # Hadoop Datanode
-  hadoop-datanode:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-    container_name: hadoop-datanode
-    environment:
-      - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
-      - HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
-      - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7075:/jmx_exporter/hadoop-jmx-config.yaml
-    volumes:
-      - hadoop-datanode:/hadoop/dfs/data
-      - ./base/configs/hadoop:/etc/hadoop
-      - ./base/configs/jmx_exporter:/jmx_exporter
-    ports:
-      - "7075:7075" # JMX Exporter port
-    networks:
-      - hudi-net
-
+  # Hadoop Namenode
   hadoop-namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
     container_name: hadoop-namenode
@@ -35,6 +19,23 @@ services:
       - hudi-net
     depends_on:
       - hadoop-datanode
+
+  # Hadoop Datanode
+  hadoop-datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-datanode
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
+      - HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
+      - HADOOP_OPTS=-javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7075:/jmx_exporter/hadoop-jmx-config.yaml
+    volumes:
+      - hadoop-datanode:/hadoop/dfs/data
+      - ./base/configs/hadoop:/etc/hadoop
+      - ./base/configs/jmx_exporter:/jmx_exporter
+    ports:
+        - "7075:7075" # JMX Exporter port
+    networks:
+      - hudi-net
 
   # Minio
 #  minio:
@@ -212,25 +213,25 @@ services:
     networks:
       - hudi-net
 
-#  kafka-exporter:
-#    image: danielqsj/kafka-exporter
-#    container_name: kafka-exporter
-#    environment:
-#      - KAFKA_SERVER=kafka:9092 # Endereço do broker Kafka
-#      - KAFKA_EXPORTER_LOG_LEVEL=info
-#      - KAFKA_EXPORTER_GROUP_FILTER=.*
-#      - KAFKA_EXPORTER_TOPIC_FILTER=.*
-#      - KAFKA_EXPORTER_RETRY_BACKOFF="500ms"
-#      - KAFKA_EXPORTER_RETRY_MAX_BACKOFF="30s"
-#    ports:
-#      - "9308:9308" # Porta para expor métricas do Kafka Exporter
-#    depends_on:
-#      - kafka
-#    networks:
-#      - hudi-net
-#    volumes:
-#      - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
-#    entrypoint: ["/bin/sh", "/wait-for-kafka.sh", "kafka_exporter"]
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka-exporter
+    environment:
+      - KAFKA_SERVER=kafka:9092 # Endereço do broker Kafka
+      - KAFKA_EXPORTER_LOG_LEVEL=info
+      - KAFKA_EXPORTER_GROUP_FILTER=.*
+      - KAFKA_EXPORTER_TOPIC_FILTER=.*
+      - KAFKA_EXPORTER_RETRY_BACKOFF="500ms"
+      - KAFKA_EXPORTER_RETRY_MAX_BACKOFF="30s"
+    ports:
+      - "9308:9308" # Porta para expor métricas do Kafka Exporter
+    depends_on:
+      - kafka
+    networks:
+      - hudi-net
+    volumes:
+      - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
+    entrypoint: ["/bin/sh", "/wait-for-kafka.sh", "kafka_exporter"]
 
   # Jupyter Notebook with PySpark
   jupyter:
@@ -260,7 +261,7 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=9yJ4LSnGW8ZYpIk-ySm7x6Udva2G9MB2DveCCrqx6Jg=
       - AIRFLOW__OPENLINEAGE__DEBUG_MODE=True
       - AIRFLOW__ELASTICSEARCH_CONFIGS__VERIFY_CERTS=False
-      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     volumes:
       - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
       - airflow_data:/airflow
@@ -324,34 +325,48 @@ services:
       - hudi-net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
 
-#  prometheus:
-#    image: prom/prometheus:latest
-#    container_name: prometheus
-#    volumes:
-#      - ./base/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-#    ports:
-#      - "9090:9090" # Prometheus UI
-#    networks:
-#      - hudi-net
-#
-#  grafana:
-#    image: grafana/grafana:latest
-#    container_name: grafana
-#    volumes:
-#      - grafana_data:/var/lib/grafana
-#      - ./base/configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-#      - ./base/configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
-#      - ./base/configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
-#      - ./base/configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-#    ports:
-#      - "3000:3000" # Grafana UI
-#    networks:
-#      - hudi-net
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=admin
-#    depends_on:
-#      - prometheus
+  spark-x-kafka-to-bronze:
+    build:
+      dockerfile: x_ingestion/Dockerfile-ingestion
+    container_name: x_ingestion
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - spark-master
+    networks:
+      - hudi-net
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./base/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" # Prometheus UI
+    networks:
+      - hudi-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./base/configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./base/configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
+      - ./base/configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
+      - ./base/configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    ports:
+      - "3000:3000" # Grafana UI
+    networks:
+      - hudi-net
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
 
 volumes:
   airflow_data:

@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import lit, col, to_timestamp
+from pyspark.sql.functions import lit, col, to_timestamp, transform, struct
 from datetime import datetime, timedelta
 spark = SparkSession.builder \
     .appName("SocialMediaSilver") \
@@ -10,6 +10,24 @@ current_time = datetime.utcnow()
 window_start = current_time - timedelta(minutes=10)
 window_end = current_time
 
+def empty_df():
+    empty_schema = StructType([
+        StructField("author", StringType(), True),
+        StructField("content", StringType(), True),
+        StructField("post_date", TimestampType(), True),
+        StructField("likes", IntegerType(), True),
+        StructField("comments", ArrayType(StructType([
+            StructField("user", StringType(), True),
+            StructField("comment", StringType(), True),
+            StructField("timestamp", StringType(), True)
+        ])), True),
+        StructField("shares", IntegerType(), True),
+        StructField("source", StringType(), True)
+    ])
+    return spark.createDataFrame([], empty_schema)
+# substitui df vazio por um DataFrame vazio com schema esperado
+
+
 # Função para carregar e transformar cada fonte
 def process_social_data(path, source):
     # Define a janela de 10 minutos
@@ -17,36 +35,48 @@ def process_social_data(path, source):
         (col("event_time") >= window_start.isoformat()) &
         (col("event_time") < window_end.isoformat())
     )
-    if source == "facebook":
-        return df.select(
-            col("user_name").alias("author"),
-            col("post_content").alias("content"),
-            to_timestamp("created_at").alias("post_date"),
-            col("likes").alias("likes"),
-            col("comments").alias("comments"),
-            col("shares").alias("shares"),
-        ).withColumn("source", lit("facebook"))
+    if df.isEmpty():
+        return empty_df()
+    else:
+        if source == "facebook":
+            return df.select(
+                col("user_name").alias("author"),
+                col("post_content").alias("content"),
+                to_timestamp("created_at").alias("post_date"),
+                col("likes").alias("likes"),
+                col("comments").alias("comments"),
+                col("shares").alias("shares"),
+            ).withColumn("source", lit("facebook"))
 
-    elif source == "instagram":
-        return df.select(
-            col("user_handle").alias("author"),
-            col("caption").alias("content"),
-            to_timestamp("posted_at").alias("post_date"),
-            col("likes").alias("likes"),
-            col("comments").alias("comments"),
-            lit(None).cast("int").alias("shares")
-        ).withColumn("source", lit("instagram"))
+        elif source == "instagram":
+            return df.select(
+                col("user_handle").alias("author"),
+                col("caption").alias("content"),
+                to_timestamp("posted_at").alias("post_date"),
+                col("likes").alias("likes"),
+                col("comments").alias("comments"),
+                lit(None).cast("int").alias("shares")
+            ).withColumn("source", lit("instagram"))
 
-    elif source == "twitter":
-        return df.select(
-            col("user.screen_name").alias("author"),
-            col("tweet.text").alias("content"),
-            to_timestamp("tweet.created_at").alias("post_date"),
-            col("metrics.likes").alias("likes"),
-            col("metrics.replies").alias("comments"),
-            col("metrics.retweets").alias("shares")
-        ).withColumn("source", lit("twitter"))
-
+        elif source == "x":
+            df = df.select(
+                col("username").alias("author"),
+                col("tweet").alias("content"),
+                to_timestamp("created_at").alias("post_date"),
+                col("likes").alias("likes"),
+                col("replies").alias("comments"),
+                col("retweets").alias("shares")
+            ).withColumn("source", lit("twitter"))
+            #Tratando normalização comentarios
+            df = df.withColumn(
+                "comments",
+                transform("comments", lambda c: struct(
+                    c["username"].alias("user"),
+                    c["tweet"].alias("comment"),
+                    c["created_at"].alias("timestamp")
+                ))
+            )
+            return df
 
 # Paths da Bronze
 facebook_df = process_social_data("hdfs://hadoop-namenode:8020/datalake/bronze/facebook", "facebook")
@@ -56,4 +86,4 @@ x_df = process_social_data("hdfs://hadoop-namenode:8020/datalake/bronze/x", "x")
 # União e escrita na camada Silver
 silver_df = facebook_df.unionByName(instagram_df).unionByName(x_df)
 
-silver_df.coalese(1).write.mode("append").parquet("hdfs://hadoop-namenode:8020/datalake/silver/social_media/")
+silver_df.coalesce(1).write.mode("append").parquet("hdfs://hadoop-namenode:8020/datalake/silver/social_media/")

@@ -19,7 +19,7 @@ df_raw = spark.readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
     .option("subscribe", KAFKA_TOPIC) \
-    .option("startingOffsets", "latest") \
+    .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
     .load()
 
@@ -49,8 +49,8 @@ df_parsed = df_parsed.withColumn("event_time", current_timestamp())
 query = (df_parsed.repartition(1).writeStream\
     .format("parquet")\
     .option("path", BRONZE_PATH)\
-    .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/facebook_raw")\
-    .trigger(processingTime="10 minutes")\
+    .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/facebook")\
+    .trigger(processingTime="1 minutes")\
     .outputMode("append")\
     .start())
 

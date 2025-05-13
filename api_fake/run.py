@@ -62,15 +62,23 @@ class FakeAPI:
         }
         return data
 
-    def generate_tweet_data(self):
+    def generate_x_post(self):
+        created_at = self.fake.date_time_between(start_date='-30d', end_date='now')
         data = {
             "username": self.fake.user_name(),
             "display_name": self.fake.name(),
             "tweet": self.fake.sentence(nb_words=random.randint(5, 20)),
             "likes": random.randint(0, 10000),
             "retweets": random.randint(0, 5000),
-            "created_at": self.fake.date_time_between(start_date='-30d', end_date='now').isoformat(),
-            "verified": self.fake.boolean(chance_of_getting_true=20)
+            "created_at": created_at.isoformat(),
+            "verified": self.fake.boolean(chance_of_getting_true=20),
+            "replies": [
+                {
+                    "username": self.fake.name(),
+                    "tweet": self.fake.sentence(),
+                    "created_at": self.fake.date_time_between(start_date=created_at, end_date='+10d').isoformat()
+                } for _ in range(random.randint(0, 10))
+            ]
         }
         return data
 
@@ -84,14 +92,14 @@ class FakeAPI:
                 self.producer.send(TOPICS[platform], value=self.generate_instagram_post())
         elif platform == "x":
             for _ in range(count):
-                self.producer.send(TOPICS[platform], value=self.generate_tweet_data())
+                self.producer.send(TOPICS[platform], value=self.generate_x_post())
         else:
             raise ValueError("Plataforma inválida. Use 'facebook' ou 'instagram'.")
 
     def run(self):
-        self.generate_data("facebook")
-        self.generate_data("instagram")
-        self.generate_data("x")
+        self.generate_data("facebook", count=random.randint(20, 50))
+        self.generate_data("instagram", count=random.randint(20, 50))
+        self.generate_data("x", count=random.randint(20, 50))
 
         # print("== = Facebook ===")
         # print(json.dumps(facebook_data, indent=2))

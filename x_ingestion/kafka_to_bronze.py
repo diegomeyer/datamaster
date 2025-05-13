@@ -4,8 +4,8 @@ from pyspark.sql.functions import col, from_json, current_date, current_timestam
 from pyspark.sql.types import *
 
 KAFKA_BOOTSTRAP_SERVERS = 'kafka:9092'
-KAFKA_TOPIC = 'instagram-post'
-BRONZE_PATH = "hdfs://hadoop-namenode:8020/datalake/bronze/instagram"
+KAFKA_TOPIC = 'x-post'
+BRONZE_PATH = "hdfs://hadoop-namenode:8020/datalake/bronze/x"
 
 # Inicializar a sessão Spark
 spark = SparkSession.builder \
@@ -22,27 +22,27 @@ df_raw = spark.readStream \
     .option("failOnDataLoss", "false") \
     .load()
 
-comment_schema = StructType([
-    StructField("user", StringType(), True),
-    StructField("comment", StringType(), True),
-    StructField("timestamp", StringType(), True)
+replies_schema = StructType([
+    StructField("username", StringType(), True),
+    StructField("tweet", StringType(), True),
+    StructField("created_at", StringType(), True)
 ])
-# Schema do JSON enviado
-instagram_schema = StructType([
-    StructField("id", StringType(), True),
-    StructField("user_handle", StringType(), True),
-    StructField("caption", StringType(), True),
-    StructField("image_url", StringType(), True),
-    StructField("posted_at", StringType(), True),  # ou TimestampType se já estiver parseado
+
+x_schema = StructType([
+    StructField("username", StringType(), True),
+    StructField("display_name", StringType(), True),
+    StructField("tweet", StringType(), True),
+    StructField("created_at", StringType(), True),
     StructField("likes", IntegerType(), True),
-    StructField("hashtags", ArrayType(StringType()), True),
-    StructField("comments", ArrayType(comment_schema), True)
+    StructField("retweets", IntegerType(), True),
+    StructField("verified", BooleanType(), True),
+    StructField("replies", ArrayType(replies_schema), True)
 ])
 
 
 # Extração e parsing do JSON
 df_parsed = df_raw.selectExpr("CAST(value AS STRING) as json") \
-    .withColumn("data", from_json(col("json"), instagram_schema)) \
+    .withColumn("data", from_json(col("json"), x_schema)) \
     .select("data.*")
 df_parsed = df_parsed.withColumn("event_time", current_timestamp())
 
@@ -51,7 +51,7 @@ df_parsed = df_parsed.withColumn("event_time", current_timestamp())
 query = (df_parsed.repartition(1).writeStream\
     .format("parquet")\
     .option("path", BRONZE_PATH)\
-    .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/instagram") \
+    .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/x") \
     .trigger(processingTime="1 minutes")\
     .outputMode("append")\
     .start())
