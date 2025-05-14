@@ -9,23 +9,14 @@ O repositório "datamaster" é um projeto do programa Data Master organizado pel
 
 ## **I. Objetivo do Case**
 
-O objetivo do case é desenvolver uma solução de engenharia de dados para consumir informações de partidas do jogo **League of Legends** em tempo real utilizando a API oficial da Riot Games. O fluxo de dados deve ser processado e armazenado em um **Data Lake**, estruturado em camadas (`bronze`, `silver`, `gold`). Além disso, a solução deve permitir **monitoramento** e **observabilidade**, garantindo a rastreabilidade do fluxo de dados, detecção de falhas e identificação de gargalos de desempenho.
+O objetivo do case é desenvolver uma solução de engenharia de dados para consumir informações das APIs de rede sociais em tempo real utilizando a biblioteca Faker para simuular os dados. O fluxo de dados deve ser processado e armazenado em um **Data Lake**, estruturado em camadas (`bronze`, `silver`, `gold`). Além disso, a solução deve permitir **monitoramento** e **observabilidade**, garantindo a rastreabilidade do fluxo de dados, detecção de falhas e identificação de gargalos de desempenho.
 
 ### **Inicio Rapido**
 
-#### **1 - Conta Developer Riot**
-   
-   - Crie uma conta no portal [Riot Games](https://authenticate.riotgames.com/?client_id=riot-developer-portal&locale=en_US&method=riot_identity_signup&platform=web&redirect_uri=https%3A%2F%2Fauth.riotgames.com%2Fauthorize%3F_gl%3D1*mmhe2r*_ga*NTQ4MTM1NzkxLjE3Mjc4MzIwMzQ.*_ga_0X9JWXB87B*MTczMzMzMjQ4OS41LjAuMTczMzMzMjQ5MC4wLjAuMA..%26client_id%3Driot-developer-portal%26prompt%3Dsignup%26redirect_uri%3Dhttps%3A%2F%2Fdeveloper.riotgames.com%2Foauth2-callback%26response_type%3Dcode%26scope%3Dopenid%2520email%2520summoner%26ui_locales%3Den-US)
-   - Faça a verificação do email cadastrado
-   - Aceite os termos
-   - Crie de fato a conta de developer
-   - Acesse o link [Developer Portal](https://developer.riotgames.com/)
-   - Gere uma nova chave da API
-
-#### **2 - Configurando o Ambiente**
+#### **Configurando o Ambiente**
    - Execute o comando 
 ```
-   ./start_services.sh RGAPI-406e3ffe-ca00-4181-9720-620342322f6f
+   ./start_services.sh 
 ``` 
 
 Com isso todos os serviços devem estar sendo executados sem problemas
@@ -39,8 +30,8 @@ Com isso todos os serviços devem estar sendo executados sem problemas
 A solução foi projetada em um pipeline de dados com as seguintes etapas principais:
 
 1. **Extração**:
-   - Dados de partidas são consumidos da API da Riot Games.
-   - As informações são enviadas para o tópico `summoners` no Kafka.
+   - Geração dos dados via biblioteca Faker
+   - As informações são enviadas para o tópico no Kafka.
 
 2. **Processamento em Tempo Real**:
    - Dados do Kafka são consumidos pelo PySpark.
@@ -61,16 +52,16 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 
 **Tecnologias Utilizadas**:
 
-| Tecnologia         | Função                                                      |
-|--------------------|-------------------------------------------------------------|
-| **Kafka**          | Sistema de mensageria para ingestão de dados em tempo real. |
+| Tecnologia        | Função                                                      |
+|-------------------|-------------------------------------------------------------|
+| **Kafka**         | Sistema de mensageria para ingestão de dados em tempo real. |
 | **Kafka Exporter** | Export as metricas do Kafka para o Prometheus               |
-| **PySpark**        | Processamento distribuído de dados.                         |
-| **HDFS**           | Armazenamento em Data Lake com suporte a grandes volumes.   |
-| **Jupyther**       | Ambiente para exploração dos dados                          |
-| **Airflow**        | Schedular Jobs                                              |
-| **Prometheus**     | Coleta de métricas para monitoramento.                      |
-| **Grafana**        | Visualização de métricas em dashboards.                     |
+| **PySpark**       | Processamento distribuído de dados.                         |
+| **HDFS**          | Armazenamento em Data Lake com suporte a grandes volumes.   |
+| **Jupyter**       | Ambiente para exploração dos dados                          |
+| **Airflow**       | Schedular Jobs                                              |
+| **Prometheus**    | Coleta de métricas para monitoramento.                      |
+| **Grafana**       | Visualização de métricas em dashboards.                     |
 | **Docker Compose** | Orquestração dos serviços.                                  |
 
 **Arquitetura**:
@@ -83,23 +74,19 @@ A solução foi projetada em um pipeline de dados com as seguintes etapas princi
 
 ### **1. Extração de Dados**
 
-O script [get_summoners_br.py](airflow/dags/get_summoners_br.py) consulta a API da Riot Games e esta agendado para executar de hora em hora, onde coleta os IDs do top 3 da região do brasil e envia informações sobre partidas para o tópico Kafka `summoners`.
-
-O script streaming [kafka_summoner_details.py](riot_summoners_details/kafka_summoner_details.py) recebe o ID do jogador e buscas os IDs de das ultimas 3 partidas e envia esses IDs para o topico Kafka  `summoners_details`
-
-O script streaming [kafka_matchs.py](riot_matchs/kafka_matchs.py) recebe o ID da partida e buscas as informações da partida e envia o json para o topico Kafka  `matchs`
+O script [run.py](api_fake/run.py) gera os dados de cada Midia Social e envia para os topicos `instagram-post`,`facebook-post`, `x-post`
 
 ### **2. Processamento de Dados**
 
-O script [consumer_kafka_to_lake.py](x_ingestion/kafka_to_bronze.py):
-- Consome mensagens do Kafka em tempo real no topico  `match`.
+Os script [kafka_to_bronze.py]
+- Consome mensagens do Kafka em tempo real nos topicos  `instagram-post`,`facebook-post`, `x-post`.
 - Escreve os dados brutos e as metricas de cada etapa na camada `bronze` do Data Lake em formato Parquet.
 - Assegura tolerância a falhas com checkpoints.
 
-O script [bronze_to_silver.py](airflow/dags/lol_bronze_to_silver.py)
+O script [silver_unified_batch.py](airflow/dags/silver_unified_batch.py)
 - DAG que consome a camada bronze e extrai e estrutura as informações mais relevantes.
 
-O script [silver_to_gold.py](airflow/dags/gold_batch.py)
+O script [gold_batch.py](airflow/dags/gold_batch.py)
 - DAG que consome a camada silver e realiza agregações.
 
 ### **3. Estrutura do Data Lake**
@@ -150,7 +137,6 @@ Caso existise dados sensiveis poderiamos utilizar os metodos:
 ### **Considerações Finais**
 
 A solução desenvolvida apresenta um pipeline robusto para ingestão, processamento e armazenamento de dados em tempo real, com suporte a monitoramento e observabilidade. As tecnologias utilizadas garantem escalabilidade e flexibilidade, atendendo às demandas do case.
-
 Com as melhorias sugeridas, a solução pode ser ainda mais eficiente e confiável, garantindo maior governança e capacidade de lidar com volumes crescentes de dados.
 
 ---
