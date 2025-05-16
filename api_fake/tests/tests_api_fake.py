@@ -1,42 +1,68 @@
-import unittest
+import pytest
+from unittest.mock import MagicMock
+from datetime import datetime
+from ..fake_api import FakeAPI
 
-from riot_summoners_details.kafka_summoner_details import SummonerDetail
+@pytest.fixture
+def fake_api():
+    api = FakeAPI(kafka_broker='127.0.0.1:9092')
+    api.producer = MagicMock()  # Evita envio real ao Kafka
+    return api
 
-class TestSummonerFunctions(unittest.TestCase):
+def test_generate_facebook_post(fake_api):
+    post = fake_api.generate_facebook_post()
+    assert "id" in post
+    assert "user_name" in post
+    assert "post_content" in post
+    assert "created_at" in post
+    assert isinstance(post["likes"], int)
+    assert isinstance(post["shares"], int)
+    assert isinstance(post["comments"], list)
+    for comment in post["comments"]:
+        assert "user" in comment
+        assert "comment" in comment
+        assert "timestamp" in comment
 
-    def test_get_summoner_puuid_success(self):
-        # Chama a função com um summoner_id de teste
-        summoner_id = "yXoeuPWPrbI7y0VMElnd0hkh8gzfJu0VI-Vc4O8fue-5fSnij0hP22Q5pQ"
-        result = SummonerDetail.get_summoner_puuid(summoner_id)
+def test_generate_instagram_post(fake_api):
+    post = fake_api.generate_instagram_post()
+    assert "id" in post
+    assert post["user_handle"].startswith("@")
+    assert "caption" in post
+    assert "image_url" in post
+    assert "posted_at" in post
+    assert isinstance(post["likes"], int)
+    assert isinstance(post["hashtags"], list)
+    for comment in post["comments"]:
+        assert "user" in comment
+        assert "comment" in comment
+        assert "timestamp" in comment
 
-        # Verifica se o resultado é o esperado
-        self.assertEqual(result, "9FaoTGFLOeF3FVIEEMbyOj5S5sZ7paudIQpwWhl1ErMoJacaVpakLcZ_xKVXhAiP_5TOzwMlw9GHrw")
+def test_generate_x_post(fake_api):
+    post = fake_api.generate_x_post()
+    assert "username" in post
+    assert "display_name" in post
+    assert "tweet" in post
+    assert "likes" in post
+    assert "retweets" in post
+    assert "created_at" in post
+    assert isinstance(post["verified"], bool)
+    for reply in post["replies"]:
+        assert "username" in reply
+        assert "tweet" in reply
+        assert "created_at" in reply
 
-    def test_get_summoner_puuid_failure(self):
-        # Chama a função com um summoner_id inválido
-        summoner_id = "invalid_id"
-        result = SummonerDetail.get_summoner_puuid(summoner_id)
+def test_generate_data_dispatch_facebook(fake_api):
+    fake_api.generate_data("facebook", count=2)
+    assert fake_api.producer.send.call_count == 2
 
-        # Verifica se a função retorna None em caso de falha
-        self.assertIsNone(result)
+def test_generate_data_dispatch_instagram(fake_api):
+    fake_api.generate_data("instagram", count=2)
+    assert fake_api.producer.send.call_count == 2
 
-    def test_get_match_history_success(self):
-        # Configura o mock para simular uma resposta bem-sucedida
-        # Chama a função com um PUUID de teste
-        puuid = "9FaoTGFLOeF3FVIEEMbyOj5S5sZ7paudIQpwWhl1ErMoJacaVpakLcZ_xKVXhAiP_5TOzwMlw9GHrw"
-        count = 3
-        result = SummonerDetail.get_match_history(puuid, count)
+def test_generate_data_dispatch_x(fake_api):
+    fake_api.generate_data("x", count=2)
+    assert fake_api.producer.send.call_count == 2
 
-        # Verifica se o resultado é o esperado
-        self.assertEqual(len(result), 3)
-
-    def test_get_match_history_failure(self):
-        # Chama a função com um PUUID inválido
-        puuid = "invalid_puuid"
-        result = SummonerDetail.get_match_history(puuid)
-
-        # Verifica se a função retorna None em caso de falha
-        self.assertIsNone(result)
-
-if __name__ == '__main__':
-    unittest.main()
+def test_generate_data_invalid_platform(fake_api):
+    with pytest.raises(ValueError):
+        fake_api.generate_data("linkedin")
