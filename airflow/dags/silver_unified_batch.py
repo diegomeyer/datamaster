@@ -1,5 +1,8 @@
+import secrets
+import base64
+
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import lit, col, to_timestamp, transform, struct
+from pyspark.sql.functions import lit, col, to_timestamp, transform, struct, sha2, concat
 from datetime import datetime, timedelta
 spark = SparkSession.builder \
     .appName("SocialMediaSilver") \
@@ -10,6 +13,7 @@ current_time = datetime.utcnow()
 window_start = current_time - timedelta(minutes=10)
 window_end = current_time
 
+# substitui df vazio por um DataFrame vazio com schema esperado
 def empty_df():
     empty_schema = StructType([
         StructField("author", StringType(), True),
@@ -25,8 +29,6 @@ def empty_df():
         StructField("source", StringType(), True)
     ])
     return spark.createDataFrame([], empty_schema)
-# substitui df vazio por um DataFrame vazio com schema esperado
-
 
 # Função para carregar e transformar cada fonte
 def process_social_data(path, source):
@@ -85,5 +87,12 @@ x_df = process_social_data("hdfs://hadoop-namenode:8020/datalake/bronze/x", "x")
 
 # União e escrita na camada Silver
 silver_df = facebook_df.unionByName(instagram_df).unionByName(x_df)
+
+# *** GERAÇÃO DE UM SALT ALEATÓRIO E SEGURO ***
+salt_bytes = secrets.token_bytes(32)  # Gera 32 bytes aleatórios
+salt = base64.b64encode(salt_bytes).decode('utf-8') # Codifica para uma string base64 para facilitar o armazenamento
+
+# *** APLICAÇÃO DA FUNÇÃO DE HASHING COM O SALT ALEATÓRIO ***
+silver_df.withColumn("author", sha2(concat(lit(salt), "username"), 256))
 
 silver_df.coalesce(1).write.mode("append").parquet("hdfs://hadoop-namenode:8020/datalake/silver/social_media/")

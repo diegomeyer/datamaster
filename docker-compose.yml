@@ -16,7 +16,7 @@ services:
       - "8020:8020" # HDFS Namenode
       - "7074:7074" # JMX Exporter port
     networks:
-      - hudi-net
+      - datamaster-net
     depends_on:
       - hadoop-datanode
 
@@ -35,7 +35,7 @@ services:
     ports:
         - "7075:7075" # JMX Exporter port
     networks:
-      - hudi-net
+      - datamaster-net
 
   # PostgreSQL Database for Airflow
   postgres:
@@ -51,7 +51,7 @@ services:
     ports:
       - "5432:5432" # PostgreSQL port
     networks:
-      - hudi-net
+      - datamaster-net
 
   # Spark Master
   spark-master:
@@ -76,7 +76,7 @@ services:
       - ./base/configs/metrics.properties:/spark/conf/metrics.properties
       - ./base/configs/metrics:/etc/metrics
     networks:
-      - hudi-net
+      - datamaster-net
     depends_on:
       - hadoop-namenode
       - hadoop-datanode
@@ -99,7 +99,7 @@ services:
       - ./base/configs/metrics.properties:/spark/conf/metrics.properties
       - ./base/configs/metrics:/etc/metrics
     networks:
-      - hudi-net
+      - datamaster-net
     depends_on:
       - spark-master
 
@@ -124,7 +124,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - hudi-net
+      - datamaster-net
 
   # Zookeeper (Kafka dependency)
   zookeeper:
@@ -133,7 +133,7 @@ services:
     ports:
       - "2181:2181" # Zookeeper client port
     networks:
-      - hudi-net
+      - datamaster-net
 
   kafka-exporter:
     image: danielqsj/kafka-exporter
@@ -150,7 +150,7 @@ services:
     depends_on:
       - kafka
     networks:
-      - hudi-net
+      - datamaster-net
     volumes:
       - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
     entrypoint: ["/bin/sh", "/wait-for-kafka.sh", "kafka_exporter"]
@@ -160,13 +160,13 @@ services:
     image: jupyter/pyspark-notebook:latest
     container_name: jupyter
     environment:
-      - SPARK_MASTER=spark://spark:7077
+      - SPARK_MASTER=spark://spark-master:7077
     volumes:
       - ./base/notebooks:/home/jovyan/work # Monta um volume para notebooks locais
     ports:
       - "8888:8888" # Jupyter Notebook port
     networks:
-      - hudi-net
+      - datamaster-net
     depends_on:
       - spark-master
     command: start-notebook.sh --NotebookApp.token=''
@@ -192,7 +192,7 @@ services:
       - "8082:8080" # Airflow Web UI
       - "8125:8125" # Metrics
     networks:
-      - hudi-net
+      - datamaster-net
     depends_on:
       - postgres
       - spark-master
@@ -208,7 +208,7 @@ services:
   # Produtor Kafka para que gera os dados da API de
   api_fake:
     build:
-      dockerfile: api_fake/Dockerfile-x-fake
+      dockerfile: api_fake/Dockerfile-api-fake
     container_name: api_fake
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
@@ -216,7 +216,7 @@ services:
       - kafka
     command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/run.py" ]
     networks:
-      - hudi-net
+      - datamaster-net
 
 
   spark-instagram-kafka-to-bronze:
@@ -230,7 +230,7 @@ services:
       - kafka
       - spark-master
     networks:
-      - hudi-net
+      - datamaster-net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
 
   spark-facebook-kafka-to-bronze:
@@ -244,7 +244,7 @@ services:
       - kafka
       - spark-master
     networks:
-      - hudi-net
+      - datamaster-net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
 
   spark-x-kafka-to-bronze:
@@ -258,7 +258,7 @@ services:
       - kafka
       - spark-master
     networks:
-      - hudi-net
+      - datamaster-net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
 
   prometheus:
@@ -269,7 +269,7 @@ services:
     ports:
       - "9090:9090" # Prometheus UI
     networks:
-      - hudi-net
+      - datamaster-net
 
   grafana:
     image: grafana/grafana:latest
@@ -283,7 +283,7 @@ services:
     ports:
       - "3000:3000" # Grafana UI
     networks:
-      - hudi-net
+      - datamaster-net
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -299,5 +299,5 @@ volumes:
   hadoop-datanode:
 
 networks:
-  hudi-net:
+  datamaster-net:
     driver: bridge

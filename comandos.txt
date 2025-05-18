@@ -2,11 +2,13 @@
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --list --bootstrap-server kafka:9092"
 
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic facebook-post --bootstrap-server kafka:9092 --from-beginning"
-docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic summoner_details --bootstrap-server kafka:9092 --from-beginning"
-docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic matchs --bootstrap-server kafka:9092 --from-beginning"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic instagram-post --bootstrap-server kafka:9092 --from-beginning"
+docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --topic x-post --bootstrap-server kafka:9092 --from-beginning"
 
 #hdfs
-docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/bronze/matchs"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/bronze/"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/silver/"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/gold/"
 
 graficos prometheus
 kafka_topic_partition_current_offset{topic="matchs"}

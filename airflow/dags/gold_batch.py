@@ -24,7 +24,7 @@ engajamento_df = silver_df.withColumn("post_day", to_date("post_date")).groupBy(
 )
 
 # Salva no HDFS
-engajamento_df.write.mode("overwrite").partitionBy("source").parquet(
+engajamento_df.coalesce(1).write.mode("overwrite").partitionBy("source").parquet(
     "hdfs://hadoop-namenode:8020/datalake/gold/social_media/engajamento_diario"
 )
 
@@ -40,7 +40,7 @@ top_autores_df = silver_df.groupBy("author", "source").agg(
     "total_engajamento", col("likes_total") + col("shares_total") + col("comments_total")
 ).orderBy(col("total_engajamento").desc())
 
-top_autores_df.write.mode("overwrite").partitionBy("source").parquet(
+top_autores_df.coalesce(1).write.mode("overwrite").partitionBy("source").parquet(
     "hdfs://hadoop-namenode:8020/datalake/gold/social_media/top_autores"
 )
 
@@ -51,7 +51,7 @@ post_por_hora_df = silver_df.withColumn("hour", hour("post_date")).groupBy("sour
     count("*").alias("total_posts")
 ).orderBy("source", "hour")
 
-post_por_hora_df.write.mode("overwrite").partitionBy("source").parquet(
+post_por_hora_df.coalesce(1).write.mode("overwrite").partitionBy("source").parquet(
     "hdfs://hadoop-namenode:8020/datalake/gold/social_media/posts_por_hora"
 )
 

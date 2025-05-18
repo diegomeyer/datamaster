@@ -1,5 +1,5 @@
 import time
-from api_fake.fake_api import FakeAPI
+from fake_api import FakeAPI
 
 if __name__ == "__main__":
     # print(f"Iniciando o processamento de mensagens do tópico {TOPIC_CONSUMER}...")
