@@ -93,6 +93,6 @@ salt_bytes = secrets.token_bytes(32)  # Gera 32 bytes aleatórios
 salt = base64.b64encode(salt_bytes).decode('utf-8') # Codifica para uma string base64 para facilitar o armazenamento
 
 # *** APLICAÇÃO DA FUNÇÃO DE HASHING COM O SALT ALEATÓRIO ***
-silver_df.withColumn("author", sha2(concat(lit(salt), "username"), 256))
+silver_df = silver_df.withColumn("author", sha2(concat(lit(salt), "author"), 256))
 
 silver_df.coalesce(1).write.mode("append").parquet("hdfs://hadoop-namenode:8020/datalake/silver/social_media/")
