@@ -16,6 +16,7 @@ with DAG(
     schedule_interval="*/10 * * * *",  # a cada 10 minutos
     catchup=False,
     description="Executa a transformação Bronze -> Silver unificada a cada 10 minutos",
+    tags=['silver', 'batch', '10minutes']
 ) as dag:
 
     silver_batch = SparkSubmitOperator(

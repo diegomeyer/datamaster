@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, current_date, current_timestamp
+from pyspark.sql.functions import col, from_json, date_format, current_timestamp
 
 from pyspark.sql.types import *
 
@@ -44,12 +44,13 @@ instagram_schema = StructType([
 df_parsed = df_raw.selectExpr("CAST(value AS STRING) as json") \
     .withColumn("data", from_json(col("json"), instagram_schema)) \
     .select("data.*")
-df_parsed = df_parsed.withColumn("event_time", current_timestamp())
-
+df_parsed = df_parsed.withColumn("event_time", current_timestamp())\
+    .withColumn("ingestion_date", date_format(col("event_time"), "yyyy-MM-dd"))
 
 # Escrever os dados brutos na camada Bronze do Data Lake
 query = (df_parsed.repartition(1).writeStream\
     .format("parquet")\
+    .partitionBy("ingestion_date")\
     .option("path", BRONZE_PATH)\
     .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/instagram") \
     .trigger(processingTime="1 minutes")\

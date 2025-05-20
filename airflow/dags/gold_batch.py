@@ -8,7 +8,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Caminho da Silver
-silver_path = "hdfs://hadoop-namenode:8020/datalake/silver/social_media/"
+silver_path = "hdfs://hadoop-namenode:8020/datalake/silver/social_media/*"
 
 # Lê a tabela Silver
 silver_df = spark.read.parquet(silver_path)
@@ -24,7 +24,7 @@ engajamento_df = silver_df.withColumn("post_day", to_date("post_date")).groupBy(
 )
 
 # Salva no HDFS
-engajamento_df.coalesce(1).write.mode("overwrite").partitionBy("source").parquet(
+engajamento_df.coalesce(1).write.mode("overwrite").partitionBy("source", "post_day").partitionBy("source").parquet(
     "hdfs://hadoop-namenode:8020/datalake/gold/social_media/engajamento_diario"
 )
 
