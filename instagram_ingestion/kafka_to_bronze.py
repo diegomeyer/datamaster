@@ -53,7 +53,7 @@ query = (df_parsed.repartition(1).writeStream\
     .partitionBy("ingestion_date")\
     .option("path", BRONZE_PATH)\
     .option("checkpointLocation", "hdfs://hadoop-namenode:8020/datalake/checkpoints/instagram") \
-    .trigger(processingTime="1 minutes")\
+    .trigger(processingTime="10 minutes")\
     .outputMode("append")\
     .start())
 
