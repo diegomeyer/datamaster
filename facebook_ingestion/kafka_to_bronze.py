@@ -47,7 +47,7 @@ df_parsed = df_parsed.withColumn("event_time", current_timestamp())\
     .withColumn("ingestion_date", date_format(col("event_time"), "yyyy-MM-dd"))
 
 # Escrever os dados brutos na camada Bronze do Data Lake
-query = (df_parsed.repartition(1).writeStream\
+query = (df_parsed.coalesce(1).writeStream\
     .format("parquet")\
     .partitionBy("ingestion_date")\
     .option("path", BRONZE_PATH)\
