@@ -24,6 +24,7 @@ with DAG(
         task_id='purge_old_bronze_data',
         application='/opt/airflow/dags/purge_bronze_data.py',
         conn_id='spark_default',
+        env_vars={'HADOOP_USER_NAME': 'root'},
         application_args=[],
         dag=dag,
     )
