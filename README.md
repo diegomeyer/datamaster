@@ -1,142 +1,130 @@
-
 <p align="center" width="100%">
     <img width="33%" src="https://github.com/diegomeyer/datamaster/blob/develop/dm.jpg">
 </p>
 
-O repositório "datamaster" é um projeto do programa Data Master organizado pela F1rst Santander. 
+\<h1 align="center"\>Datamaster\</h1\>
 
-# **Relatório Técnico**
+\<p align="center"\>
+Um projeto de engenharia de dados desenvolvido para o programa \<strong\>Data Master\</strong\>, uma iniciativa da \<strong\>F1rst Santander\</strong\>.
+\</p\>
 
-## **I. Objetivo do Case**
+-----
 
-O objetivo do case é desenvolver uma solução de engenharia de dados para consumir informações das APIs de rede sociais em tempo real utilizando a biblioteca Faker para simuular os dados. O fluxo de dados deve ser processado e armazenado em um **Data Lake**, estruturado em camadas (`bronze`, `silver`, `gold`). Além disso, a solução deve permitir **monitoramento** e **observabilidade**, garantindo a rastreabilidade do fluxo de dados, detecção de falhas e identificação de gargalos de desempenho.
+## 🎯 **Objetivo do Projeto**
 
-### **Inicio Rapido**
+Este projeto tem como objetivo desenvolver uma solução completa de engenharia de dados para consumir informações de APIs de redes sociais em tempo real. Para simular esse fluxo, utilizamos a biblioteca `Faker`.
 
-#### **Configurando o Ambiente**
-   - Execute o comando 
+O pipeline de dados foi projetado para processar e armazenar as informações em um **Data Lake** estruturado em camadas (`bronze`, `silver` e `gold`). Além disso, a solução implementa recursos de **monitoramento** e **observabilidade** para garantir a rastreabilidade do fluxo, a detecção de falhas e a identificação de gargalos de desempenho.
+
+-----
+
+## 🚀 **Início Rápido**
+
+### **Configuração do Ambiente**
+
+Para iniciar todos os serviços necessários, execute o comando abaixo no seu terminal. Ele garantirá que toda a infraestrutura da solução esteja operacional.
+
+```bash
+./start_services.sh
 ```
-   ./start_services.sh 
-``` 
 
-Com isso todos os serviços devem estar sendo executados sem problemas
+-----
 
----
+## 🏗️ **Arquitetura da Solução**
 
-## **II. Arquitetura de Solução e Arquitetura Técnica**
+O pipeline de dados foi projetado com as seguintes etapas:
 
-### **Arquitetura de Solução**
+1.  **Extração em Tempo Real**:
 
-A solução foi projetada em um pipeline de dados com as seguintes etapas principais:
+      * Dados de redes sociais são simulados com a biblioteca `Faker`.
+      * As informações geradas são enviadas para tópicos dedicados no **Apache Kafka**.
 
-1. **Extração**:
-   - Geração dos dados via biblioteca Faker
-   - As informações são enviadas para o tópico no Kafka.
+2.  **Processamento e Ingestão (Bronze)**:
 
-2. **Processamento em Tempo Real**:
-   - Dados do Kafka são consumidos pelo PySpark.
-   - Os dados são escritos na camada `bronze` do Data Lake.
+      * O **PySpark** consome os dados dos tópicos do Kafka em tempo real.
+      * Os dados brutos são gravados na camada `bronze` do Data Lake em formato Parquet, garantindo a integridade original da informação.
 
-3. **Transformação e Limpeza**:
-   - Dados da camada `bronze` são processados e normalizados para a camada `silver`.
+3.  **Transformação e Limpeza (Silver)**:
 
-4. **Agregação**:
-   - A camada `gold` é criada com agregações e métricas prontas para análise, como KPIs.
+      * Os dados da camada `bronze` são processados, limpos e normalizados.
+      * O resultado é armazenado na camada `silver`, pronta para análises mais estruturadas.
 
-5. **Monitoramento**:
-   - Métricas de todo o pipeline são monitorados usando Prometheus, Grafana.
+4.  **Agregação e Análise (Gold)**:
 
----
+      * A camada `gold` é criada a partir da camada `silver`, contendo agregações e métricas de negócio (KPIs) prontas para consumo por ferramentas de BI e análise de dados.
 
-### **Arquitetura Técnica**
+5.  **Monitoramento Contínuo**:
 
-**Tecnologias Utilizadas**:
+      * Métricas de performance de todo o pipeline são coletadas pelo **Prometheus** e visualizadas em dashboards interativos no **Grafana**.
 
-| Tecnologia        | Função                                                      |
-|-------------------|-------------------------------------------------------------|
-| **Kafka**         | Sistema de mensageria para ingestão de dados em tempo real. |
-| **Kafka Exporter** | Export as metricas do Kafka para o Prometheus               |
-| **PySpark**       | Processamento distribuído de dados.                         |
-| **HDFS**          | Armazenamento em Data Lake com suporte a grandes volumes.   |
-| **Jupyter**       | Ambiente para exploração dos dados                          |
-| **Airflow**       | Schedular Jobs                                              |
-| **Prometheus**    | Coleta de métricas para monitoramento.                      |
-| **Grafana**       | Visualização de métricas em dashboards.                     |
-| **Docker Compose** | Orquestração dos serviços.                                  |
+### **Visão Geral da Arquitetura**
 
-**Arquitetura**:
+### **Tecnologias Utilizadas**
 
-![arquitetura.jpg](arquitetura.jpg)
+| Tecnologia | Função na Arquitetura |
+| :--- | :--- |
+| **Docker Compose** | Orquestração e gerenciamento dos contêineres da solução. |
+| **Apache Kafka** | Sistema de mensageria para ingestão de dados em tempo real. |
+| **PySpark** | Ferramenta para processamento distribuído de grandes volumes de dados. |
+| **HDFS** | Sistema de arquivos distribuído, utilizado como Data Lake. |
+| **Airflow** | Orquestrador para agendamento e automação dos fluxos de trabalho (DAGs). |
+| **Prometheus** | Sistema de monitoramento e coleta de métricas. |
+| **Grafana** | Plataforma para visualização e análise das métricas coletadas. |
+| **Jupyter** | Ambiente interativo para exploração e análise de dados. |
+| **Kafka Exporter**| Ferramenta para exportar métricas do Kafka para o Prometheus. |
 
----
+-----
 
-## **III. Explicação sobre o Case Desenvolvido**
+## 🔧 **Detalhes da Implementação**
 
-### **1. Extração de Dados**
+#### **1. Extração de Dados**
 
-O script [run.py](api_fake/run.py) gera os dados de cada Midia Social e envia para os topicos `instagram-post`,`facebook-post`, `x-post`
+O script `api_fake/run.py` é responsável por gerar dados sintéticos que simulam posts de redes sociais e publicá-los nos tópicos `instagram-post`, `facebook-post` e `x-post` do Kafka.
 
-### **2. Processamento de Dados**
+#### **2. Processamento e Armazenamento**
 
-Os script [kafka_to_bronze.py]
-- Consome mensagens do Kafka em tempo real nos topicos  `instagram-post`,`facebook-post`, `x-post`.
-- Escreve os dados brutos e as metricas de cada etapa na camada `bronze` do Data Lake em formato Parquet.
-- Assegura tolerância a falhas com checkpoints.
+  * **Kafka para Bronze**: O script `kafka_to_bronze.py` consome as mensagens do Kafka em tempo real e armazena os dados brutos na camada `bronze`. Este processo utiliza checkpoints para garantir a tolerância a falhas.
+  * **Bronze para Silver**: A DAG `silver_unified_batch.py` no Airflow orquestra a transformação dos dados brutos, unificando e estruturando as informações mais relevantes na camada `silver`.
+  * **Silver para Gold**: A DAG `gold_batch.py` consome os dados da camada `silver` e executa agregações para gerar KPIs, como o total de interações por usuário, armazenando o resultado na camada `gold`.
 
-O script [silver_unified_batch.py](airflow/dags/silver_unified_batch.py)
-- DAG que consome a camada bronze e extrai e estrutura as informações mais relevantes.
+#### **3. Estrutura do Data Lake**
 
-O script [gold_batch.py](airflow/dags/gold_batch.py)
-- DAG que consome a camada silver e realiza agregações.
+  * **Camada Bronze**: Armazena os dados brutos, exatamente como foram recebidos das fontes, em formato Parquet.
+  * **Camada Silver**: Contém dados limpos, normalizados e enriquecidos, prontos para análises mais complexas.
+  * **Camada Gold**: Apresenta dados agregados e métricas de negócio (KPIs), otimizados para consumo final.
 
-### **3. Estrutura do Data Lake**
+#### **4. Conformidade com a LGPD**
 
-- **Camada Bronze**: Dados brutos conforme recebidos do Kafka.
-- **Camada Silver**: Dados transformados e normalizados, por exemplo, extraindo estatísticas individuais dos jogadores.
-- **Camada Gold**: Dados agregados, como KPIs (ex.: total de kills, mortes e assistências por jogador).
+Os dados utilizados neste projeto são sintéticos e não contêm informações pessoais sensíveis. Em um cenário com dados reais, técnicas de anonimização como **generalização, supressão, k-anonimidade e tokenização** poderiam ser aplicadas para garantir a conformidade com a Lei Geral de Proteção de Dados (LGPD).
 
-### **4. Monitoramento**
+-----
 
-**Métricas**:
-- Kafka, HDFS e Spark expõem métricas para o Prometheus, que são visualizadas no Grafana.
+## ✨ **Melhorias e Próximos Passos**
 
-### **4. LGPD**
+Para evoluir a solução, as seguintes melhorias são sugeridas:
 
-Para os dados que trabalhamos na API, não temos dados sensiveis.
+1.  **Escalabilidade**:
 
-Caso existise dados sensiveis poderiamos utilizar os metodos:
-   - Generalização
-   - Supressão
-   - K-Anonimidade
-   - Tokenização
+      * Implementar particionamento nos tópicos do Kafka e otimizar o paralelismo no PySpark para suportar um volume maior de dados.
+      * Expandir o cluster HDFS com múltiplos nós para aumentar a capacidade de armazenamento.
 
----
+2.  **Observabilidade Avançada**:
 
-## **IV. Melhorias e Considerações Finais**
+      * Integrar o **OpenTelemetry** para adicionar rastreamento distribuído, permitindo um monitoramento detalhado da latência em cada componente do pipeline.
 
-### **Melhorias**
+3.  **Governança de Dados**:
 
-1. **Escalabilidade**:
-   - Implementar particionamento no Kafka e paralelismo no PySpark para suportar maior volume de dados.
-   - Configurar múltiplos nós no cluster HDFS para maior capacidade de armazenamento.
+      * Implementar políticas de retenção e expurgo automático de dados em cada camada do Data Lake.
+      * Adotar um catálogo de dados para documentar e facilitar a descoberta dos ativos de dados.
 
-2. **Observabilidade Avançada**:
-   - Adicionar rastreamento distribuído com OpenTelemetry para monitorar o tempo de processamento em cada componente do pipeline.
+4.  **Segurança**:
 
-3. **Governança de Dados**:
-   - Adicionar políticas de retenção em cada camada.
-   - Adicionar expurgo dos dados
+      * Habilitar mecanismos de autenticação e autorização no Kafka.
+      * Criptografar dados sensíveis em repouso no Data Lake.
+      * Utilizar um "cofre" de segredos (como o HashiCorp Vault) para gerenciar chaves de API e credenciais.
 
-4. **Segurança**:
-   - Configurar autenticação e autorização no Kafka.
-   - Criptografar os dados sensíveis armazenados no Data Lake.
-   - Chaves de API ser armazenadas em um cofre de senhas.
-
----
+-----
 
 ### **Considerações Finais**
 
-A solução desenvolvida apresenta um pipeline robusto para ingestão, processamento e armazenamento de dados em tempo real, com suporte a monitoramento e observabilidade. As tecnologias utilizadas garantem escalabilidade e flexibilidade, atendendo às demandas do case.
-Com as melhorias sugeridas, a solução pode ser ainda mais eficiente e confiável, garantindo maior governança e capacidade de lidar com volumes crescentes de dados.
-
----
+A solução desenvolvida apresenta um pipeline de dados robusto e moderno para ingestão, processamento e armazenamento de dados em tempo real. A arquitetura, baseada em tecnologias consolidadas no mercado, garante escalabilidade, flexibilidade e observabilidade. As melhorias sugeridas podem tornar a plataforma ainda mais eficiente e confiável, assegurando uma governança de dados sólida e capacidade para lidar com desafios de Big Data cada vez maiores.
