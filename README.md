@@ -2,12 +2,6 @@
     <img width="33%" src="https://github.com/diegomeyer/datamaster/blob/develop/dm.jpg">
 </p>
 
-\<h1 align="center"\>Datamaster\</h1\>
-
-\<p align="center"\>
-Um projeto de engenharia de dados desenvolvido para o programa \<strong\>Data Master\</strong\>, uma iniciativa da \<strong\>F1rst Santander\</strong\>.
-\</p\>
-
 -----
 
 ## 🎯 **Objetivo do Projeto**
