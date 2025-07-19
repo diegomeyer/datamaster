@@ -7,10 +7,13 @@ docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-console-consumer.sh --t
 
 #hdfs
 docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/bronze/"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/bronze/x"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/bronze/x/ingestion_date=2025-05-22"
 docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/silver/"
 docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -ls /datalake/gold/"
 
-docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -cp /datalake/bronze/instagram/ingestion_date=2025-05-20 /datalake/bronze/instagram/ingestion_date=2025-03-20"
+docker exec -it hadoop-datanode bash -c "unset HADOOP_OPTS && hdfs dfs -cp /datalake/bronze/instagram/ingestion_date=2025-05-22 /datalake/bronze/instagram/ingestion_date=2025-03-22"
 
 graficos prometheus
 kafka_topic_partition_current_offset{topic="matchs"}
+
