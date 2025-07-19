@@ -214,7 +214,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
       - kafka
-    command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/run.py" ]
+    command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/main.py" ]
     networks:
       - datamaster-net
 
