@@ -1,4 +1,4 @@
-from api_fake.generators.facebook_generator import FacebookDataGenerator
+from generators.facebook_generator import FacebookDataGenerator
 
 def test_generate_post():
     """Testa se o gerador de dados do Facebook cria um post válido."""

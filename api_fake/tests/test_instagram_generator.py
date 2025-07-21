@@ -1,4 +1,4 @@
-from api_fake.generators.instagram_generator import InstagramDataGenerator
+from generators.instagram_generator import InstagramDataGenerator
 
 def test_generate_post():
     """Testa se o gerador de dados do Instagram cria um post válido."""

@@ -1,5 +1,8 @@
-from api_fake.core.kafka_client import KafkaClient
-from api_fake.core.fake_api import FakeAPI
+import os
+import time
+
+from core.kafka_client import KafkaClient
+from core.fake_api import FakeAPI
 
 if __name__ == "__main__":
     kafka_client = KafkaClient(kafka_broker=os.environ.get('KAFKA_BOOTSTRAP_SERVERS', 'kafka:9092'))

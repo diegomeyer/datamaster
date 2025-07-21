@@ -1,4 +1,4 @@
-from api_fake.generators.x_generator import XDataGenerator
+from generators.x_generator import XDataGenerator
 
 def test_generate_post():
     """Testa se o gerador de dados do X cria um post válido."""

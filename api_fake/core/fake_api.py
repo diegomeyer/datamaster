@@ -1,8 +1,8 @@
 import random
-from api_fake.core.kafka_client import KafkaClient
-from api_fake.generators.facebook_generator import FacebookDataGenerator
-from api_fake.generators.instagram_generator import InstagramDataGenerator
-from api_fake.generators.x_generator import XDataGenerator
+from core.kafka_client import KafkaClient
+from generators.facebook_generator import FacebookDataGenerator
+from generators.instagram_generator import InstagramDataGenerator
+from generators.x_generator import XDataGenerator
 
 TOPICS = {
     "instagram": "instagram-post",

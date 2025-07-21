@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from api_fake.core.kafka_client import KafkaClient
+from core.kafka_client import KafkaClient
 
 @pytest.fixture
 def kafka_client():
     """Cria uma instância do KafkaClient com um mock do KafkaProducer."""
-    with patch("api_fake.core.kafka_client.KafkaProducer") as MockKafkaProducer:
+    with patch("core.kafka_client.KafkaProducer") as MockKafkaProducer:
         mock_producer = MagicMock()
         MockKafkaProducer.return_value = mock_producer
         kafka_client = KafkaClient(kafka_broker='kafka:9092')

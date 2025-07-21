@@ -1,6 +1,6 @@
 from faker import Faker
 import random
-from api_fake.core.data_generator_interface import DataGeneratorInterface
+from core.data_generator_interface import DataGeneratorInterface
 
 class InstagramDataGenerator(DataGeneratorInterface):
     def __init__(self):

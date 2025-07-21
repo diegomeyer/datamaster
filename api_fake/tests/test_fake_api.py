@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import MagicMock
-from api_fake.core.fake_api import FakeAPI
-from api_fake.generators.facebook_generator import FacebookDataGenerator
-from api_fake.generators.instagram_generator import InstagramDataGenerator
-from api_fake.generators.x_generator import XDataGenerator
+from core.fake_api import FakeAPI
+from generators.facebook_generator import FacebookDataGenerator
+from generators.instagram_generator import InstagramDataGenerator
+from generators.x_generator import XDataGenerator
 
 @pytest.fixture
 def fake_api():
