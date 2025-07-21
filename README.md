@@ -22,6 +22,25 @@ Para iniciar todos os serviços necessários, execute o comando abaixo no seu te
 ./start_services.sh
 ```
 
+### **Testes**
+
+Para garantir a qualidade e o correto funcionamento dos componentes, o projeto conta com testes unitários. Para executar os testes do componente `api_fake`, que simula a geração de dados.
+
+É crucial configurar a variável de ambiente `PYTHONPATH` para que o Python consiga localizar os módulos do projeto corretamente, especialmente porque os testes utilizam importações absolutas a partir da raiz do projeto.
+
+1.  **Navegue até o diretório raiz do projeto** no seu terminal.
+
+2.  **Exporte a variável `PYTHONPATH`** para apontar para o diretório api_fake `export PYTHONPATH=$(pwd)/api_fake`. Este comando adiciona a pasta raiz do projeto ao caminho de busca de módulos do Python.
+
+3.  **Execute os testes** utilizando o `pytest`. Com isso execute  `pytest api_fake/test`
+
+    
+
+
+
+```bash
+./start_services.sh
+```
 -----
 
 ## 🏗️ **Arquitetura da Solução**
@@ -73,7 +92,7 @@ O pipeline de dados foi projetado com as seguintes etapas:
 
 #### **1. Extração de Dados**
 
-O script `api_fake/run.py` é responsável por gerar dados sintéticos que simulam posts de redes sociais e publicá-los nos tópicos `instagram-post`, `facebook-post` e `x-post` do Kafka.
+O script `api_fake/main.py` é responsável por gerar dados sintéticos que simulam posts de redes sociais e publicá-los nos tópicos `instagram-post`, `facebook-post` e `x-post` do Kafka.
 
 #### **2. Processamento e Armazenamento**
 
