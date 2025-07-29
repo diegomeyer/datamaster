@@ -1,0 +1,333 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_inputRate_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Taxa de Entrada",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Taxa de Entrada (Streaming)",
+      "type": "stat"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "unit": "ms"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_processingTime_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Tempo de Processamento",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Tempo de Processamento (Streaming)",
+      "type": "stat"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "unit": "ms"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_totalDelay_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Latência Total",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Latência Total (Streaming)",
+      "type": "stat"
+    },
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_inputRate_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Taxa de Entrada (registros/s)",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_processingTime_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Tempo de Processamento (ms)",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(spark_driver_streaming_lastCompletedBatch_totalDelay_Value{job=\"spark-applications\", application_name=~\"$application_name\"})",
+          "legendFormat": "Latência Total (ms)",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Performance do Streaming",
+      "type": "timeseries"
+    },
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "unit": "Bps"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spark_executor_shuffle_read_bytes_total{job=\"spark-applications\", application_name=~\"$application_name\"}[$__rate_interval]))",
+          "legendFormat": "Shuffle Read",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spark_executor_shuffle_write_bytes_total{job=\"spark-applications\", application_name=~\"$application_name\"}[$__rate_interval]))",
+          "legendFormat": "Shuffle Write",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spark_executor_input_bytes_total{job=\"spark-applications\", application_name=~\"$application_name\"}[$__rate_interval]))",
+          "legendFormat": "Input",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(spark_executor_output_bytes_total{job=\"spark-applications\", application_name=~\"$application_name\"}[$__rate_interval]))",
+          "legendFormat": "Output",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Taxa de Transferência de Dados",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [
+    "spark",
+    "datamaster"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 2,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(spark_driver_streaming_lastCompletedBatch_inputRate_Value{job=\"spark-applications\"}, application_name)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "application_name",
+        "options": [],
+        "query": {
+          "query": "label_values(spark_driver_streaming_lastCompletedBatch_inputRate_Value{job=\"spark-applications\"}, application_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Spark Application Metrics",
+  "uid": "spark-apps-dm",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,571 @@
+starting org.apache.spark.deploy.master.Master, logging to /opt/spark/logs/spark--org.apache.spark.deploy.master.Master-1-f052af1377f0.out
+starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-f052af1377f0.out
+starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/spark/logs/spark--org.apache.spark.deploy.history.HistoryServer-1-f052af1377f0.out
+starting org.apache.spark.sql.hive.thriftserver.HiveThriftServer2, logging to /opt/spark/logs/spark--org.apache.spark.sql.hive.thriftserver.HiveThriftServer2-1-f052af1377f0.out
+[I 2025-07-29 01:42:02.421 ServerApp] jupysql_plugin | extension was successfully linked.
+[I 2025-07-29 01:42:02.421 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2025-07-29 01:42:02.423 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[W 2025-07-29 01:42:02.424 LabApp] 'token' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 01:42:02.424 LabApp] 'password' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 01:42:02.426 ServerApp] ServerApp.token config is deprecated in 2.0. Use IdentityProvider.token.
+[I 2025-07-29 01:42:02.426 ServerApp] jupyterlab | extension was successfully linked.
+[I 2025-07-29 01:42:02.428 ServerApp] notebook | extension was successfully linked.
+[I 2025-07-29 01:42:02.429 ServerApp] Writing Jupyter server cookie secret to /root/.local/share/jupyter/runtime/jupyter_cookie_secret
+[I 2025-07-29 01:42:02.566 ServerApp] notebook_shim | extension was successfully linked.
+[W 2025-07-29 01:42:02.575 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using encryption. This is not recommended.
+[W 2025-07-29 01:42:02.575 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using authentication. This is highly insecure and not recommended.
+[I 2025-07-29 01:42:02.575 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2025-07-29 01:42:02.575 ServerApp] Registered jupysql-plugin server extension
+[I 2025-07-29 01:42:02.575 ServerApp] jupysql_plugin | extension was successfully loaded.
+[I 2025-07-29 01:42:02.576 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2025-07-29 01:42:02.577 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2025-07-29 01:42:02.578 LabApp] JupyterLab extension loaded from /usr/local/lib/python3.10/site-packages/jupyterlab
+[I 2025-07-29 01:42:02.578 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
+[I 2025-07-29 01:42:02.578 LabApp] Extension Manager is 'pypi'.
+[I 2025-07-29 01:42:02.597 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2025-07-29 01:42:02.599 ServerApp] notebook | extension was successfully loaded.
+[I 2025-07-29 01:42:02.600 ServerApp] Serving notebooks from local directory: /home/iceberg/notebooks
+[I 2025-07-29 01:42:02.600 ServerApp] Jupyter Server 2.15.0 is running at:
+[I 2025-07-29 01:42:02.600 ServerApp] http://localhost:8888/tree
+[I 2025-07-29 01:42:02.600 ServerApp]     http://127.0.0.1:8888/tree
+[I 2025-07-29 01:42:02.600 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2025-07-29 01:42:02.613 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+[W 2025-07-29 01:46:09.920 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[W 2025-07-29 01:46:09.923 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[W 2025-07-29 01:46:09.924 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[W 2025-07-29 01:46:09.925 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[W 2025-07-29 01:46:09.929 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[W 2025-07-29 01:46:09.930 ServerApp] Clearing invalid/expired login cookie username-localhost-8888
+[I 2025-07-29 01:46:16.463 ServerApp] Kernel started: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:46:18 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:46:18 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+[I 2025-07-29 01:46:18.823 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+25/07/29 01:46:19 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:47:33.715 ServerApp] Saving file at /notebooks/Untitled.ipynb
+[I 2025-07-29 01:47:33.733 ServerApp] Writing notebook-signing key to /root/.local/share/jupyter/notebook_secret
+25/07/29 01:47:45 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-2af706d1-be5c-4920-abf4-3def2ad5bedd/userFiles-43ef7b02-2532-4100-a055-b1a31522283b. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-2af706d1-be5c-4920-abf4-3def2ad5bedd/userFiles-43ef7b02-2532-4100-a055-b1a31522283b
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:166)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: Cannot run program "rm": error=0, Failed to exec spawn helper: pid: 622, signal: 15
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:162)
+	... 25 more
+Caused by: java.io.IOException: error=0, Failed to exec spawn helper: pid: 622, signal: 15
+	at java.base/java.lang.ProcessImpl.forkAndExec(Native Method)
+	at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:314)
+	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:244)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+	... 27 more
+[I 2025-07-29 01:47:46.060 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:47:46.064 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:47:46.067 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:47:46.067 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:47:47 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:47:48 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:47:50 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+25/07/29 01:48:20 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-012f859e-8f3c-4c36-86fd-22c1f13d5928/pyspark-b0752746-70f6-4fe1-8627-8bb1345ee303. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-012f859e-8f3c-4c36-86fd-22c1f13d5928/pyspark-b0752746-70f6-4fe1-8627-8bb1345ee303
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:48:21.290 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:48:21.293 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:48:21.297 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:48:21.297 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:48:22 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:48:23 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:48:24 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+25/07/29 01:49:14 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-1674d4cf-c367-4c0f-b399-085a0147b307/pyspark-afa8f790-2ae8-4086-b416-dfeda2453519. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-1674d4cf-c367-4c0f-b399-085a0147b307/pyspark-afa8f790-2ae8-4086-b416-dfeda2453519
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:49:15.737 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:49:15.742 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:49:15.746 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:49:15.746 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:49:17 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:49:17 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:49:19 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:49:34.715 ServerApp] Saving file at /notebooks/Untitled.ipynb
+25/07/29 01:50:52 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/blockmgr-3643709e-9304-4282-8384-c46bedd72c6c. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/blockmgr-3643709e-9304-4282-8384-c46bedd72c6c
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.storage.DiskBlockManager.$anonfun$doStop$1(DiskBlockManager.scala:368)
+	at org.apache.spark.storage.DiskBlockManager.$anonfun$doStop$1$adapted(DiskBlockManager.scala:364)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.storage.DiskBlockManager.doStop(DiskBlockManager.scala:364)
+	at org.apache.spark.storage.DiskBlockManager.$anonfun$addShutdownHook$2(DiskBlockManager.scala:346)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:50:52.689 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:50:52.695 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:50:52.699 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:50:52.699 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:50:54 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:50:54 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:50:56 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:51:34.749 ServerApp] Saving file at /notebooks/Untitled.ipynb
+25/07/29 01:52:44 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-31d5f832-a974-4eed-85b0-dc281501ff67/userFiles-94fb5c6d-fa0a-4181-af49-66936c8c2c8b. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-31d5f832-a974-4eed-85b0-dc281501ff67/userFiles-94fb5c6d-fa0a-4181-af49-66936c8c2c8b
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:166)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: Cannot run program "rm": error=0, Failed to exec spawn helper: pid: 1418, signal: 15
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:162)
+	... 25 more
+Caused by: java.io.IOException: error=0, Failed to exec spawn helper: pid: 1418, signal: 15
+	at java.base/java.lang.ProcessImpl.forkAndExec(Native Method)
+	at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:314)
+	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:244)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+	... 27 more
+[I 2025-07-29 01:52:44.855 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:52:44.860 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:52:44.865 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:52:44.865 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:52:46 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:52:46 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:52:48 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:53:35.709 ServerApp] Saving file at /notebooks/Untitled.ipynb
+[I 2025-07-29 01:54:42.941 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:54:42.944 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:54:42.947 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:54:42.947 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:54:44 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:54:44 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:54:46 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:55:36.712 ServerApp] Saving file at /notebooks/Untitled.ipynb
+[I 2025-07-29 01:56:37.047 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:56:37.050 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:56:37.053 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:56:37.053 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:56:38 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:56:39 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:56:40 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:57:36.742 ServerApp] Saving file at /notebooks/Untitled.ipynb
+25/07/29 01:57:38 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-5f73d2ba-cfa9-4716-8787-adbd788c817f. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-5f73d2ba-cfa9-4716-8787-adbd788c817f
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:57:39.281 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:57:39.284 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:57:39.287 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:57:39.287 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:57:40 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:57:41 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:57:49 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 01:57:53.261 ServerApp] Kernel restarted: 69e688a9-57c3-4afb-87ce-f23b9b71a876
+[I 2025-07-29 01:57:53.264 ServerApp] Starting buffering for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+[I 2025-07-29 01:57:53.267 ServerApp] Connecting to kernel 69e688a9-57c3-4afb-87ce-f23b9b71a876.
+[I 2025-07-29 01:57:53.267 ServerApp] Restoring connection for 69e688a9-57c3-4afb-87ce-f23b9b71a876:71ce0a45-5544-42b9-9ce4-9cde076aa9eb
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:57:54 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:57:55 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:57:56 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+starting org.apache.spark.deploy.master.Master, logging to /opt/spark/logs/spark--org.apache.spark.deploy.master.Master-1-f052af1377f0.out
+starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-f052af1377f0.out
+starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/spark/logs/spark--org.apache.spark.deploy.history.HistoryServer-1-f052af1377f0.out
+starting org.apache.spark.sql.hive.thriftserver.HiveThriftServer2, logging to /opt/spark/logs/spark--org.apache.spark.sql.hive.thriftserver.HiveThriftServer2-1-f052af1377f0.out
+[I 2025-07-29 01:58:27.392 ServerApp] jupysql_plugin | extension was successfully linked.
+[I 2025-07-29 01:58:27.392 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2025-07-29 01:58:27.395 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[W 2025-07-29 01:58:27.396 LabApp] 'token' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 01:58:27.396 LabApp] 'password' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 01:58:27.398 ServerApp] ServerApp.token config is deprecated in 2.0. Use IdentityProvider.token.
+[I 2025-07-29 01:58:27.398 ServerApp] jupyterlab | extension was successfully linked.
+[I 2025-07-29 01:58:27.401 ServerApp] notebook | extension was successfully linked.
+[I 2025-07-29 01:58:27.550 ServerApp] notebook_shim | extension was successfully linked.
+[W 2025-07-29 01:58:27.563 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using encryption. This is not recommended.
+[W 2025-07-29 01:58:27.563 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using authentication. This is highly insecure and not recommended.
+[I 2025-07-29 01:58:27.563 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2025-07-29 01:58:27.564 ServerApp] Registered jupysql-plugin server extension
+[I 2025-07-29 01:58:27.564 ServerApp] jupysql_plugin | extension was successfully loaded.
+[I 2025-07-29 01:58:27.566 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2025-07-29 01:58:27.567 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2025-07-29 01:58:27.569 LabApp] JupyterLab extension loaded from /usr/local/lib/python3.10/site-packages/jupyterlab
+[I 2025-07-29 01:58:27.569 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
+[I 2025-07-29 01:58:27.569 LabApp] Extension Manager is 'pypi'.
+[I 2025-07-29 01:58:27.588 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2025-07-29 01:58:27.590 ServerApp] notebook | extension was successfully loaded.
+[I 2025-07-29 01:58:27.591 ServerApp] Serving notebooks from local directory: /home/iceberg/notebooks
+[I 2025-07-29 01:58:27.591 ServerApp] Jupyter Server 2.15.0 is running at:
+[I 2025-07-29 01:58:27.591 ServerApp] http://localhost:8888/tree
+[I 2025-07-29 01:58:27.591 ServerApp]     http://127.0.0.1:8888/tree
+[I 2025-07-29 01:58:27.591 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2025-07-29 01:58:27.606 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+[W 2025-07-29 01:58:33.720 LabApp] Could not determine jupyterlab build status without nodejs
+[I 2025-07-29 01:58:34.394 ServerApp] Kernel started: c7edcc28-7e5d-453f-a871-807b3b343306
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:58:36 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:58:36 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+[I 2025-07-29 01:58:36.764 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+[I 2025-07-29 01:58:36.766 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+[I 2025-07-29 01:58:37.364 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+[I 2025-07-29 01:58:37.373 ServerApp] Kernel restarted: c7edcc28-7e5d-453f-a871-807b3b343306
+[I 2025-07-29 01:58:37.380 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:58:38 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:58:39 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+[W 2025-07-29 01:58:39.644 ServerApp] Got events for closed stream <zmq.eventloop.zmqstream.ZMQStream object at 0x7f983818edd0>
+25/07/29 01:58:46 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-5df44238-03f9-4a8a-976f-af746e62608d/userFiles-27745263-1854-48af-bb74-1ae1a93e7177. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-5df44238-03f9-4a8a-976f-af746e62608d/userFiles-27745263-1854-48af-bb74-1ae1a93e7177
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:58:47.237 ServerApp] Kernel restarted: c7edcc28-7e5d-453f-a871-807b3b343306
+[I 2025-07-29 01:58:47.240 ServerApp] Starting buffering for c7edcc28-7e5d-453f-a871-807b3b343306:2806f894-948d-4ab0-a5d2-15eda95b6b05
+[I 2025-07-29 01:58:47.244 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+[I 2025-07-29 01:58:47.244 ServerApp] Restoring connection for c7edcc28-7e5d-453f-a871-807b3b343306:2806f894-948d-4ab0-a5d2-15eda95b6b05
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:58:48 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:58:49 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:58:57 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-4a23d18c-4abb-45d8-a63d-76cdc866bfcf/userFiles-db37dd51-3024-42cf-8f2d-8b4b473f5a7c. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-4a23d18c-4abb-45d8-a63d-76cdc866bfcf/userFiles-db37dd51-3024-42cf-8f2d-8b4b473f5a7c
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 01:58:58.587 ServerApp] Kernel restarted: c7edcc28-7e5d-453f-a871-807b3b343306
+[I 2025-07-29 01:58:58.592 ServerApp] Starting buffering for c7edcc28-7e5d-453f-a871-807b3b343306:2806f894-948d-4ab0-a5d2-15eda95b6b05
+[I 2025-07-29 01:58:58.596 ServerApp] Connecting to kernel c7edcc28-7e5d-453f-a871-807b3b343306.
+[I 2025-07-29 01:58:58.596 ServerApp] Restoring connection for c7edcc28-7e5d-453f-a871-807b3b343306:2806f894-948d-4ab0-a5d2-15eda95b6b05
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 01:59:00 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 01:59:00 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 01:59:01 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 02:00:34.722 ServerApp] Saving file at /notebooks/Untitled.ipynb
+starting org.apache.spark.deploy.master.Master, logging to /opt/spark/logs/spark--org.apache.spark.deploy.master.Master-1-f052af1377f0.out
+starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-f052af1377f0.out
+starting org.apache.spark.deploy.history.HistoryServer, logging to /opt/spark/logs/spark--org.apache.spark.deploy.history.HistoryServer-1-f052af1377f0.out
+starting org.apache.spark.sql.hive.thriftserver.HiveThriftServer2, logging to /opt/spark/logs/spark--org.apache.spark.sql.hive.thriftserver.HiveThriftServer2-1-f052af1377f0.out
+[I 2025-07-29 02:03:10.790 ServerApp] jupysql_plugin | extension was successfully linked.
+[I 2025-07-29 02:03:10.790 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2025-07-29 02:03:10.792 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[W 2025-07-29 02:03:10.793 LabApp] 'token' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 02:03:10.793 LabApp] 'password' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2025-07-29 02:03:10.795 ServerApp] ServerApp.token config is deprecated in 2.0. Use IdentityProvider.token.
+[I 2025-07-29 02:03:10.795 ServerApp] jupyterlab | extension was successfully linked.
+[I 2025-07-29 02:03:10.798 ServerApp] notebook | extension was successfully linked.
+[I 2025-07-29 02:03:10.936 ServerApp] notebook_shim | extension was successfully linked.
+[W 2025-07-29 02:03:10.945 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using encryption. This is not recommended.
+[W 2025-07-29 02:03:10.945 ServerApp] WARNING: The Jupyter server is listening on all IP addresses and not using authentication. This is highly insecure and not recommended.
+[I 2025-07-29 02:03:10.945 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2025-07-29 02:03:10.945 ServerApp] Registered jupysql-plugin server extension
+[I 2025-07-29 02:03:10.945 ServerApp] jupysql_plugin | extension was successfully loaded.
+[I 2025-07-29 02:03:10.946 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2025-07-29 02:03:10.947 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2025-07-29 02:03:10.948 LabApp] JupyterLab extension loaded from /usr/local/lib/python3.10/site-packages/jupyterlab
+[I 2025-07-29 02:03:10.948 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
+[I 2025-07-29 02:03:10.948 LabApp] Extension Manager is 'pypi'.
+[I 2025-07-29 02:03:10.967 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2025-07-29 02:03:10.969 ServerApp] notebook | extension was successfully loaded.
+[I 2025-07-29 02:03:10.970 ServerApp] Serving notebooks from local directory: /home/iceberg/notebooks
+[I 2025-07-29 02:03:10.970 ServerApp] Jupyter Server 2.15.0 is running at:
+[I 2025-07-29 02:03:10.970 ServerApp] http://localhost:8888/tree
+[I 2025-07-29 02:03:10.970 ServerApp]     http://127.0.0.1:8888/tree
+[I 2025-07-29 02:03:10.970 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2025-07-29 02:03:10.986 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+[W 2025-07-29 02:03:15.002 LabApp] Could not determine jupyterlab build status without nodejs
+[I 2025-07-29 02:03:15.609 ServerApp] Kernel started: 53a5f65d-1f16-4720-b6a4-216f14d61a71
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 02:03:17 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 02:03:17 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+[I 2025-07-29 02:03:17.875 ServerApp] Connecting to kernel 53a5f65d-1f16-4720-b6a4-216f14d61a71.
+[I 2025-07-29 02:03:17.876 ServerApp] Connecting to kernel 53a5f65d-1f16-4720-b6a4-216f14d61a71.
+[I 2025-07-29 02:03:17.887 ServerApp] Connecting to kernel 53a5f65d-1f16-4720-b6a4-216f14d61a71.
+25/07/29 02:03:18 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-bfba3dcc-6897-4de0-800a-c3a9f36eadc1. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-bfba3dcc-6897-4de0-800a-c3a9f36eadc1
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:166)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: Cannot run program "rm": error=0, Failed to exec spawn helper: pid: 629, signal: 15
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:162)
+	... 25 more
+Caused by: java.io.IOException: error=0, Failed to exec spawn helper: pid: 629, signal: 15
+	at java.base/java.lang.ProcessImpl.forkAndExec(Native Method)
+	at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:314)
+	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:244)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+	... 27 more
+[I 2025-07-29 02:03:18.970 ServerApp] Kernel restarted: 53a5f65d-1f16-4720-b6a4-216f14d61a71
+[I 2025-07-29 02:03:18.973 ServerApp] Starting buffering for 53a5f65d-1f16-4720-b6a4-216f14d61a71:cd260ac0-c6a4-4b68-af12-ee658e57327e
+[I 2025-07-29 02:03:18.975 ServerApp] Connecting to kernel 53a5f65d-1f16-4720-b6a4-216f14d61a71.
+[I 2025-07-29 02:03:18.975 ServerApp] Restoring connection for 53a5f65d-1f16-4720-b6a4-216f14d61a71:cd260ac0-c6a4-4b68-af12-ee658e57327e
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 02:03:20 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 02:03:20 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 02:03:22 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+25/07/29 02:05:04 WARN JavaUtils: Attempt to delete using native Unix OS command failed for path = /tmp/spark-767c9549-1252-4534-aea8-38c29310c9df/pyspark-7f8bd1d3-711f-43d2-8d79-77222e786b8b. Falling back to Java IO way
+java.io.IOException: Failed to delete: /tmp/spark-767c9549-1252-4534-aea8-38c29310c9df/pyspark-7f8bd1d3-711f-43d2-8d79-77222e786b8b
+	at org.apache.spark.network.util.JavaUtils.deleteRecursivelyUsingUnixNative(JavaUtils.java:174)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:109)
+	at org.apache.spark.network.util.JavaUtils.deleteRecursively(JavaUtils.java:90)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively(SparkFileUtils.scala:121)
+	at org.apache.spark.util.SparkFileUtils.deleteRecursively$(SparkFileUtils.scala:120)
+	at org.apache.spark.util.Utils$.deleteRecursively(Utils.scala:1126)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4(ShutdownHookManager.scala:65)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$4$adapted(ShutdownHookManager.scala:62)
+	at scala.collection.IndexedSeqOptimized.foreach(IndexedSeqOptimized.scala:36)
+	at scala.collection.IndexedSeqOptimized.foreach$(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:198)
+	at org.apache.spark.util.ShutdownHookManager$.$anonfun$new$2(ShutdownHookManager.scala:62)
+	at org.apache.spark.util.SparkShutdownHook.run(ShutdownHookManager.scala:214)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$2(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1928)
+	at org.apache.spark.util.SparkShutdownHookManager.$anonfun$runAll$1(ShutdownHookManager.scala:188)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at org.apache.spark.util.SparkShutdownHookManager.runAll(ShutdownHookManager.scala:188)
+	at org.apache.spark.util.SparkShutdownHookManager$$anon$2.run(ShutdownHookManager.scala:178)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+[I 2025-07-29 02:05:05.135 ServerApp] Kernel restarted: 53a5f65d-1f16-4720-b6a4-216f14d61a71
+[I 2025-07-29 02:05:05.138 ServerApp] Starting buffering for 53a5f65d-1f16-4720-b6a4-216f14d61a71:cd260ac0-c6a4-4b68-af12-ee658e57327e
+[I 2025-07-29 02:05:05.141 ServerApp] Connecting to kernel 53a5f65d-1f16-4720-b6a4-216f14d61a71.
+[I 2025-07-29 02:05:05.141 ServerApp] Restoring connection for 53a5f65d-1f16-4720-b6a4-216f14d61a71:cd260ac0-c6a4-4b68-af12-ee658e57327e
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/07/29 02:05:06 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/07/29 02:05:07 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+25/07/29 02:05:08 WARN SparkSession: Using an existing Spark session; only runtime SQL configurations will take effect.
+[I 2025-07-29 02:05:15.494 ServerApp] Saving file at /notebooks/Untitled.ipynb

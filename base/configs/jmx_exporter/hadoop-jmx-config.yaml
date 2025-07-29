@@ -1,5 +1,0 @@
-rules:
-  - pattern: Hadoop<(.+)><.+>
-    name: hadoop_$1
-    type: GAUGE
-    help: "Hadoop metrics for $1"

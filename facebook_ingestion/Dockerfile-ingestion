@@ -1,9 +1,23 @@
-FROM jupyter/pyspark-notebook:latest
+FROM jupyter/pyspark-notebook:spark-3.3.0
 
-USER root
-RUN apt-get update && apt-get install -y netcat-traditional
+#RUN #apt-get update && apt-get install -y netcat-traditional
 WORKDIR /app
 COPY ./facebook_ingestion /app
 COPY ./base/configs/wait-for-kafka.sh /app/wait-for-kafka.sh
 
-RUN pip install kafka-python pyspark
+# Copia os arquivos de configuração do Spark Metrics
+COPY ../base/configs/metrics /etc/metrics
+
+# Copia o JMX Exporter se necessário (não é usado diretamente no /metrics)
+# COPY ../base/configs/jmx_exporter /jmx_exporter
+
+# Define a variável para o arquivo de configuração de métricas
+ENV SPARK_CONF_DIR=/etc/metrics
+ENV SPARK_CONF_spark.metrics.conf=/etc/metrics/spark-metrics.properties
+ENV SPARK_CONF_spark.ui.prometheus.enabled=true
+ENV SPARK_CONF_spark.metrics.namespace=application
+
+# Adiciona o Prometheus servlet ao classpath via Maven (exemplo usando --packages)
+ENV SPARK_JARS_PACKAGES=org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,io.prometheus:simpleclient_spark_3.3:0.16.0
+
+RUN pip install kafka-python pyspark==3.3.0

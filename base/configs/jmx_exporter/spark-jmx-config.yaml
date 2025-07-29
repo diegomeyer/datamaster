@@ -1,5 +1,0 @@
-rules:
-  - pattern: spark<(.+)><.+><.+>
-    name: spark_$1
-    type: GAUGE
-    help: "Spark metrics for $1"

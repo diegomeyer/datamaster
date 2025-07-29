@@ -51,7 +51,7 @@ docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --to
 docker exec -it kafka bash -c "unset KAFKA_OPTS && kafka-topics.sh --create --topic x-post --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1"
 
 
-echo "Tópico 'summoners' criado com sucesso!"
+echo "Tópicos criado com sucesso!"
 
 # Passo 4: Listar todos os tópicos para confirmar
 echo "Listando todos os tópicos no Kafka:"
