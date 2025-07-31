@@ -1,13 +1,15 @@
 version: '3'
 services:
+  #Processamento
   spark-iceberg:
     build:
       context: ./spark
-    image: custom/spark-iceberg:3.5.5
+    image: custom/spark-iceberg
     container_name: spark-iceberg
     networks:
-      - iceberg_net
+      iceberg_net:
     depends_on:
+      - rest
       - minio
     volumes:
       - ./warehouse:/home/iceberg/warehouse
@@ -16,61 +18,41 @@ services:
       - AWS_ACCESS_KEY_ID=admin
       - AWS_SECRET_ACCESS_KEY=password
       - AWS_REGION=us-east-1
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092 # Essencial para o Spark se conectar ao Kafka
     ports:
+      - 8888:8888
       - 8080:8080
       - 10000:10000
       - 10001:10001
-
-  #Processamento
-#  spark-iceberg:
-#    image: tabulario/spark-iceberg
-#    container_name: spark-iceberg
-#    build: spark/
-#    networks:
-#      iceberg_net:
-#    depends_on:
-#      - rest
-#      - minio
-#    volumes:
-#      - ./warehouse:/home/iceberg/warehouse
-#      - ./notebooks:/home/iceberg/notebooks/notebooks
-#    environment:
-#      - AWS_ACCESS_KEY_ID=admin
-#      - AWS_SECRET_ACCESS_KEY=password
-#      - AWS_REGION=us-east-1
-#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092 # Essencial para o Spark se conectar ao Kafka
-#    ports:
-#      - 8888:8888
-#      - 8080:8080
-#      - 10000:10000
-#      - 10001:10001
-#  rest:
-#    image: apache/iceberg-rest-fixture
-#    container_name: iceberg-rest
-#    networks:
-#      iceberg_net:
-#    ports:
-#      - 8181:8181
-#    environment:
-#      - AWS_ACCESS_KEY_ID=admin
-#      - AWS_SECRET_ACCESS_KEY=password
-#      - AWS_REGION=us-east-1
-#      - CATALOG_WAREHOUSE=s3://warehouse/
-#      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
-#      - CATALOG_S3_ENDPOINT=http://minio:9000
+  rest:
+    image: apache/iceberg-rest-fixture
+    container_name: iceberg-rest
+    networks:
+      iceberg_net:
+    ports:
+      - 8181:8181
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - CATALOG_WAREHOUSE=s3://warehouse/
+      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
+      - CATALOG_S3_ENDPOINT=http://minio:9000
 
   # Storage
   minio:
     image: minio/minio
     container_name: minio
     environment:
-      - MINIO_ROOT_USER=minio_root
+      - MINIO_ROOT_USER=minio
       - MINIO_ROOT_PASSWORD=password
-      - MINIO_DOMAIN=minio_root
+      - MINIO_DOMAIN=minio
     networks:
       iceberg_net:
         aliases:
-          - warehouse.minio_root
+          - warehouse.minio
+    volumes:
+      - minio_data:/data
     ports:
       - 9001:9001
       - 9000:9000
@@ -88,24 +70,24 @@ services:
       - AWS_REGION=us-east-1
     entrypoint: |
       /bin/sh -c "
-      # 1. Crie um alias 'minio_root' com as credenciais do usuário root do MinIO
-      until (/usr/bin/mc alias set minio_root http://minio:9000 minio_root password) do echo '...waiting for MinIO with root credentials...' && sleep 1; done;
+      # 1. Crie um alias 'minio' com as credenciais do usuário root do MinIO
+      until (/usr/bin/mc alias set minio http://minio:9000 minio password) do echo '...waiting for MinIO with root credentials...' && sleep 1; done;
 
       # 2. Remova e recrie o bucket 'warehouse' usando o alias root
-      /usr/bin/mc rm -r --force minio_root/warehouse;
-      /usr/bin/mc mb minio_root/warehouse;
+      /usr/bin/mc rm -r --force minio/warehouse;
+      /usr/bin/mc mb minio/warehouse;
 
       # 3. CRIE O USUÁRIO 'admin' SE ELE NÃO EXISTIR
       # Esta linha tentará primeiro habilitar o usuário (se já existir e estiver desabilitado)
       # Se falhar (usuário não existe ou outro erro), ele tentará ADICIONAR o usuário.
       echo 'Ensuring admin user exists and is enabled...'
-      /usr/bin/mc admin user add minio_root admin password;
+      /usr/bin/mc admin user add minio admin password;
 
       # 4. Crie a política usando o alias 'minio_root'
-      /usr/bin/mc admin policy create minio_root full-access-warehouse /etc/minio-policies/minio_policy_full_access_warehouse.json;
+      /usr/bin/mc admin policy create minio full-access-warehouse /etc/minio-policies/minio_policy_full_access_warehouse.json;
 
       # 5. Anexe esta política ao usuário 'admin'
-      /usr/bin/mc admin policy attach minio_root full-access-warehouse --user admin;
+      /usr/bin/mc admin policy attach minio full-access-warehouse --user admin;
 
       # Mantenha o contêiner rodando
       tail -f /dev/null
@@ -151,53 +133,83 @@ services:
       - postgresql
 
   # Kafka e ZooKeeper
+#  kafka:
+#    image: confluentinc/cp-kafka:latest
+#    hostname: kafka
+#    container_name: kafka
+#    user: "0"
+#    ports:
+#      - "9092:9092"
+#      - "9093:9093"
+#      - "7071:7071" # JMX Exporter port
+#    environment:
+#      # Use um ID único para o cluster KRaft. Gere um UUID ou use este.
+#      CLUSTER_ID: '4L6g3Y9bS5aD7eF2hK1jP0mN8qR7tV6u' # Mantenha o mesmo se você já gerou um
+#      KAFKA_BROKER_ID: 1 # ID único para este broker no cluster
+#      KAFKA_PROCESS_ROLES: broker,controller # Este broker será broker E controlador de metadados
+#      KAFKA_NODE_ID: 1 # ID do nó para o KRaft (pode ser o mesmo que BROKER_ID se o nó for um broker e controlador)
+#      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 # Define os controladores para o quorum KRaft
+#      # O 9093 é a porta de comunicação interna/inter-broker do Kafka no modo KRaft
+#      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+#      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+#      KAFKA_LOG_DIRS: /tmp/kraft-storage # Novo diretório para os logs KRaft e dados
+#      KAFKA_OPTS: >
+#        -javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7071:/jmx_exporter/kafka-jmx-config.yaml
+#    volumes:
+#      - ./base/configs/jmx_exporter:/jmx_exporter
+#      - kafka_kraft_data:/tmp/kraft-storage # Volume para persistir os dados do KRaft
+#    networks:
+#      - iceberg_net
+#    command:
+#      - sh
+#      - -c
+#      - |
+#        # Ensure correct ownership of the storage directory for appuser
+#        # The 'appuser' in Confluent images often has UID/GID 1000
+#        chown -R 1000:1000 /tmp/kraft-storage || true
+#        # Format the storage directory for KRaft
+#        if [ ! -d "/tmp/kraft-storage/meta.properties" ]; then
+#          kafka-storage format -t ${KAFKA_CLUSTER_ID} -c /etc/kafka/kafka.properties
+#        fi;
+#        # Start Kafka
+#        /etc/confluent/docker/run &
+#        # Keep the container running
+#        wait
+  # Kafka
   kafka:
-    image: confluentinc/cp-kafka:latest
-    hostname: kafka
+    image: wurstmeister/kafka:2.12-2.5.0
     container_name: kafka
-    user: "0"
-    ports:
-      - "9092:9092"
-      - "9093:9093"
-      - "7071:7071" # JMX Exporter port
     environment:
-      # Use um ID único para o cluster KRaft. Gere um UUID ou use este.
-      CLUSTER_ID: '4L6g3Y9bS5aD7eF2hK1jP0mN8qR7tV6u' # Mantenha o mesmo se você já gerou um
-      KAFKA_BROKER_ID: 1 # ID único para este broker no cluster
-      KAFKA_PROCESS_ROLES: broker,controller # Este broker será broker E controlador de metadados
-      KAFKA_NODE_ID: 1 # ID do nó para o KRaft (pode ser o mesmo que BROKER_ID se o nó for um broker e controlador)
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 # Define os controladores para o quorum KRaft
-      # O 9093 é a porta de comunicação interna/inter-broker do Kafka no modo KRaft
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_LOG_DIRS: /tmp/kraft-storage # Novo diretório para os logs KRaft e dados
       KAFKA_OPTS: >
         -javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7071:/jmx_exporter/kafka-jmx-config.yaml
+    ports:
+      - "9092:9092" # Porta do Kafka
+      - "7071:7071" # JMX Exporter port
     volumes:
       - ./base/configs/jmx_exporter:/jmx_exporter
-      - kafka_kraft_data:/tmp/kraft-storage # Volume para persistir os dados do KRaft
+    depends_on:
+      - zookeeper
     networks:
       - iceberg_net
-    command:
-      - sh
-      - -c
-      - |
-        # Ensure correct ownership of the storage directory for appuser
-        # The 'appuser' in Confluent images often has UID/GID 1000
-        chown -R 1000:1000 /tmp/kraft-storage || true
-        # Format the storage directory for KRaft
-        if [ ! -d "/tmp/kraft-storage/meta.properties" ]; then
-          kafka-storage format -t ${KAFKA_CLUSTER_ID} -c /etc/kafka/kafka.properties
-        fi;
-        # Start Kafka
-        /etc/confluent/docker/run &
-        # Keep the container running
-        wait
+
+  # Zookeeper (Kafka dependency)
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181" # Zookeeper client port
+    networks:
+      - iceberg_net
 
   kafka-exporter:
     image: danielqsj/kafka-exporter
@@ -218,22 +230,6 @@ services:
     volumes:
       - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
     entrypoint: [ "/bin/sh", "/wait-for-kafka.sh", "kafka_exporter" ]
-
-  # Jupyter Notebook with PySpark
-  jupyter:
-    image: jupyter/pyspark-notebook:latest
-    container_name: jupyter
-    environment:
-      - SPARK_MASTER=spark://spark-iceberg:7077
-    volumes:
-      - ./base/notebooks:/home/jovyan/work # Monta um volume para notebooks locais
-    ports:
-      - "8888:8888" # Jupyter Notebook port
-    networks:
-      - iceberg_net
-    depends_on:
-      - spark-iceberg
-    command: start-notebook.sh --NotebookApp.token=''
 
   # Produtor Kafka para que gera os dados da API de
   api_fake:
