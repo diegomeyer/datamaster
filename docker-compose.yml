@@ -1,215 +1,98 @@
-version: '3'
+
+version: '3.8'
+
 services:
-  #Processamento
-  spark-iceberg:
-    build:
-      context: ./spark
-    image: custom/spark-iceberg
-    container_name: spark-iceberg
+  spark-master:
+    image: bitnami/spark:3.5.0
+    hostname: spark-master
+    container_name: spark-master
+    user: "root"
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      SPARK_MODE: master
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_DIRS: /tmp/spark-events
+      SPARK_HISTORY_FS_LOG_DIRECTORY: /tmp/spark-events
+      AWS_REGION: us-east-1
+    volumes:
+      - ./spark-events:/tmp/spark-events
     networks:
-      iceberg_net:
+      - iceberg_net
+
+
+  spark-worker:
+    image: bitnami/spark:3.5.0
+    hostname: spark-worker
+    container_name: spark-worker
+    user: "root"
     depends_on:
-      - rest
-      - minio
-    volumes:
-      - ./warehouse:/home/iceberg/warehouse
-      - ./notebooks:/home/iceberg/notebooks/notebooks
+      - spark-master
     environment:
-      - AWS_ACCESS_KEY_ID=admin
-      - AWS_SECRET_ACCESS_KEY=password
-      - AWS_REGION=us-east-1
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092 # Essencial para o Spark se conectar ao Kafka
-    ports:
-      - 8888:8888
-      - 8080:8080
-      - 10000:10000
-      - 10001:10001
-  rest:
-    image: apache/iceberg-rest-fixture
-    container_name: iceberg-rest
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_MEMORY: 1G
+      SPARK_WORKER_CORES: 1
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_DIRS: /tmp/spark-events
+      SPARK_WORKER_DIR: /opt/spark/work
+      AWS_REGION: us-east-1
+    volumes:
+      - ./spark-events:/tmp/spark-events
+      - ./spark-worker-work:/opt/spark/work
     networks:
-      iceberg_net:
-    ports:
-      - 8181:8181
-    environment:
-      - AWS_ACCESS_KEY_ID=admin
-      - AWS_SECRET_ACCESS_KEY=password
-      - AWS_REGION=us-east-1
-      - CATALOG_WAREHOUSE=s3://warehouse/
-      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
-      - CATALOG_S3_ENDPOINT=http://minio:9000
+      - iceberg_net
 
-  # Storage
-  minio:
-    image: minio/minio
-    container_name: minio
-    environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=password
-      - MINIO_DOMAIN=minio
-    networks:
-      iceberg_net:
-        aliases:
-          - warehouse.minio
-    volumes:
-      - minio_data:/data
-    ports:
-      - 9001:9001
-      - 9000:9000
-    command: ["server", "/data", "--console-address", ":9001"]
-  mc:
-    depends_on:
-      - minio
-    image: minio/mc
-    container_name: mc
-    volumes:
-      - ./base/configs/minio:/etc/minio-policies
-    environment:
-      - AWS_ACCESS_KEY_ID=minio_root
-      - AWS_SECRET_ACCESS_KEY=password
-      - AWS_REGION=us-east-1
-    entrypoint: |
-      /bin/sh -c "
-      # 1. Crie um alias 'minio' com as credenciais do usuário root do MinIO
-      until (/usr/bin/mc alias set minio http://minio:9000 minio password) do echo '...waiting for MinIO with root credentials...' && sleep 1; done;
-
-      # 2. Remova e recrie o bucket 'warehouse' usando o alias root
-      /usr/bin/mc rm -r --force minio/warehouse;
-      /usr/bin/mc mb minio/warehouse;
-
-      # 3. CRIE O USUÁRIO 'admin' SE ELE NÃO EXISTIR
-      # Esta linha tentará primeiro habilitar o usuário (se já existir e estiver desabilitado)
-      # Se falhar (usuário não existe ou outro erro), ele tentará ADICIONAR o usuário.
-      echo 'Ensuring admin user exists and is enabled...'
-      /usr/bin/mc admin user add minio admin password;
-
-      # 4. Crie a política usando o alias 'minio_root'
-      /usr/bin/mc admin policy create minio full-access-warehouse /etc/minio-policies/minio_policy_full_access_warehouse.json;
-
-      # 5. Anexe esta política ao usuário 'admin'
-      /usr/bin/mc admin policy attach minio full-access-warehouse --user admin;
-
-      # Mantenha o contêiner rodando
-      tail -f /dev/null
-      "
-    networks:
-      iceberg_net:
-
-  #Banco de Dados Relacional para Metadados e Ferramentas
-  postgresql:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
-      POSTGRES_USER: ${POSTGRES_USER:-myuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-
-  # Orquestração e Agendamento
-  mage:
-    image: mageai/mageai:latest
-    container_name: mage
-    restart: always
-    ports:
-      - 6789:6789
-    volumes:
-      - ./mage_workspace:/home/src
-    environment:
-      # Credenciais para acessar o MinIO como Data Lake
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-admin}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-password}
-      AWS_ENDPOINT_URL: "http://minio:9000"
-      AWS_S3_BUCKET: "datalake"
-      # Configurações do banco de dados (usando o PostgreSQL desta stack)
-      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
-      POSTGRES_USER: ${POSTGRES_USER:-myuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
-      POSTGRES_HOST: postgresql
-    depends_on:
-      - minio
-      - postgresql
-
-  # Kafka e ZooKeeper
-#  kafka:
-#    image: confluentinc/cp-kafka:latest
-#    hostname: kafka
-#    container_name: kafka
-#    user: "0"
-#    ports:
-#      - "9092:9092"
-#      - "9093:9093"
-#      - "7071:7071" # JMX Exporter port
-#    environment:
-#      # Use um ID único para o cluster KRaft. Gere um UUID ou use este.
-#      CLUSTER_ID: '4L6g3Y9bS5aD7eF2hK1jP0mN8qR7tV6u' # Mantenha o mesmo se você já gerou um
-#      KAFKA_BROKER_ID: 1 # ID único para este broker no cluster
-#      KAFKA_PROCESS_ROLES: broker,controller # Este broker será broker E controlador de metadados
-#      KAFKA_NODE_ID: 1 # ID do nó para o KRaft (pode ser o mesmo que BROKER_ID se o nó for um broker e controlador)
-#      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 # Define os controladores para o quorum KRaft
-#      # O 9093 é a porta de comunicação interna/inter-broker do Kafka no modo KRaft
-#      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-#      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-#      KAFKA_LOG_DIRS: /tmp/kraft-storage # Novo diretório para os logs KRaft e dados
-#      KAFKA_OPTS: >
-#        -javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7071:/jmx_exporter/kafka-jmx-config.yaml
-#    volumes:
-#      - ./base/configs/jmx_exporter:/jmx_exporter
-#      - kafka_kraft_data:/tmp/kraft-storage # Volume para persistir os dados do KRaft
-#    networks:
-#      - iceberg_net
-#    command:
-#      - sh
-#      - -c
-#      - |
-#        # Ensure correct ownership of the storage directory for appuser
-#        # The 'appuser' in Confluent images often has UID/GID 1000
-#        chown -R 1000:1000 /tmp/kraft-storage || true
-#        # Format the storage directory for KRaft
-#        if [ ! -d "/tmp/kraft-storage/meta.properties" ]; then
-#          kafka-storage format -t ${KAFKA_CLUSTER_ID} -c /etc/kafka/kafka.properties
-#        fi;
-#        # Start Kafka
-#        /etc/confluent/docker/run &
-#        # Keep the container running
-#        wait
-  # Kafka
   kafka:
-    image: wurstmeister/kafka:2.12-2.5.0
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
     container_name: kafka
+    user: "0"
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+      - "7071:7071" # JMX Exporter port
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # Use um ID único para o cluster KRaft. Gere um UUID ou use este.
+      CLUSTER_ID: '4L6g3Y9bS5aD7eF2hK1jP0mN8qR7tV6u' # Mantenha o mesmo se você já gerou um
+      KAFKA_BROKER_ID: 1 # ID único para este broker no cluster
+      KAFKA_PROCESS_ROLES: broker,controller # Este broker será broker E controlador de metadados
+      KAFKA_NODE_ID: 1 # ID do nó para o KRaft (pode ser o mesmo que BROKER_ID se o nó for um broker e controlador)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 # Define os controladores para o quorum KRaft
+      # O 9093 é a porta de comunicação interna/inter-broker do Kafka no modo KRaft
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_DIRS: /tmp/kraft-storage # Novo diretório para os logs KRaft e dados
       KAFKA_OPTS: >
         -javaagent:/jmx_exporter/jmx_prometheus_javaagent.jar=7071:/jmx_exporter/kafka-jmx-config.yaml
-    ports:
-      - "9092:9092" # Porta do Kafka
-      - "7071:7071" # JMX Exporter port
     volumes:
       - ./base/configs/jmx_exporter:/jmx_exporter
-    depends_on:
-      - zookeeper
+      - kafka_kraft_data:/tmp/kraft-storage # Volume para persistir os dados do KRaft
     networks:
       - iceberg_net
-
-  # Zookeeper (Kafka dependency)
-  zookeeper:
-    image: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181" # Zookeeper client port
-    networks:
-      - iceberg_net
+    command:
+      - sh
+      - -c
+      - |
+        # Ensure correct ownership of the storage directory for appuser
+        # The 'appuser' in Confluent images often has UID/GID 1000
+        chown -R 1000:1000 /tmp/kraft-storage || true
+        # Format the storage directory for KRaft
+        if [ ! -d "/tmp/kraft-storage/meta.properties" ]; then
+          kafka-storage format -t ${KAFKA_CLUSTER_ID} -c /etc/kafka/kafka.properties
+        fi;
+        # Start Kafka
+        /etc/confluent/docker/run &
+        # Keep the container running
+        wait
 
   kafka-exporter:
     image: danielqsj/kafka-exporter
@@ -231,16 +114,148 @@ services:
       - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
     entrypoint: [ "/bin/sh", "/wait-for-kafka.sh", "kafka_exporter" ]
 
+  minio:
+    image: minio/minio:latest
+    hostname: minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    networks:
+      - iceberg_net
+
+  mc:
+    depends_on:
+      - minio
+    image: minio/mc
+    container_name: mc
+    environment:
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_REGION=us-east-1
+    entrypoint: |
+      /bin/sh -c "
+        # Configurar alias para MinIO
+        mc alias set myminio http://minio:9000 minioadmin minioadmin
+        
+        # Criar bucket warehouse se não existir
+        mc mb myminio/warehouse --ignore-existing
+        tail -f /dev/null
+      "
+    networks:
+      iceberg_net:
+
+#  iceberg-rest:
+#    image: tabulario/iceberg-rest:latest
+#    hostname: iceberg-rest
+#    container_name: iceberg-rest
+#    ports:
+#      - "8181:8181"
+#    environment:
+#      CATALOG_WAREHOUSE: s3a://warehouse/
+#      CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
+#      CATALOG_S3_ENDPOINT: http://172.21.0.4:9000
+#      CATALOG_S3_ACCESS_KEY_ID: minioadmin
+#      CATALOG_S3_SECRET_ACCESS_KEY: minioadmin
+#      CATALOG_S3_PATH_STYLE_ACCESS: "true"
+#      AWS_REGION: us-east-1
+#      AWS_ACCESS_KEY_ID: minioadmin
+#      AWS_SECRET_ACCESS_KEY: minioadmin
+#    depends_on:
+#      - minio
+#    extra_hosts:
+#      - "minio:172.23.0.5"
+#    networks:
+#      - iceberg_net
+
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    hostname: jupyter
+    container_name: jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      SPARK_MASTER: spark://spark-master:7077
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT: http://minio:9000
+      AWS_REGION: us-east-1
+    depends_on:
+      - spark-master
+      - minio
+    networks:
+      - iceberg_net
+    command: start-notebook.sh --NotebookApp.token=''
+
+  # Airflow  and PostgreSQL Database for Airflow
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./base/configs/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432" # PostgreSQL port
+    networks:
+        - iceberg_net
+
+  airflow:
+    build:
+      dockerfile: airflow/Dockerfile-aiflow-spark
+    container_name: airflow
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: False
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__FERNET_KEY: 9yJ4LSnGW8ZYpIk-ySm7x6Udva2G9MB2DveCCrqx6Jg=
+      AIRFLOW__OPENLINEAGE__DEBUG_MODE: True
+      AIRFLOW__ELASTICSEARCH_CONFIGS__VERIFY_CERTS: False
+      AIRFLOW__WEBSERVER__AUTHENTICATE: False
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      AWS_REGION: us-east-1
+      AIRFLOW_CONN_SPARK_MASTER: spark://spark-master:7077
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
+      - airflow_data:/airflow
+      - ./base/configs/setup_connections.py:/opt/setup_connections.py
+    ports:
+      - "8082:8080" # Airflow Web UI
+      - "8125:8125" # Metrics
+    networks:
+      - iceberg_net
+    depends_on:
+      - postgres
+      - spark-master
+      - kafka
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow connections create-default-connections &&
+      airflow users create --username admin --password admin --firstname Admin --lastname Admin --role Admin --email admin@example.com &&
+      python /opt/setup_connections.py &&
+      airflow scheduler & sleep 5 && airflow webserver"
+
   # Produtor Kafka para que gera os dados da API de
   api_fake:
     build:
       dockerfile: api_fake/Dockerfile-api-fake
     container_name: api_fake
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - kafka
-    command: ["/app/wait-for-kafka.sh", "kafka", "python", "/app/main.py" ]
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/main.py" ]
     networks:
       - iceberg_net
 
@@ -249,72 +264,58 @@ services:
       dockerfile: instagram_ingestion/Dockerfile-ingestion
     container_name: instagram_ingestion
     environment:
-      - SPARK_MASTER=spark://spark-iceberg:7077
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - KAFKA_TOPIC=instagram-post
-      - AWS_ACCESS_KEY_ID=admin
-      - AWS_SECRET_ACCESS_KEY=password
-      - AWS_REGION=us-east-1
-    ports:
-      - "4040:4040"
-    volumes:
-      - ./base/configs/metrics:/etc/metrics
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPARK_MASTER: spark://spark-master:7077
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT: http://minio:9000
+      AWS_REGION: us-east-1
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
     depends_on:
       - kafka
-      - spark-iceberg
+      - spark-master
     networks:
       - iceberg_net
     command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
 
-#  spark-facebook-kafka-to-bronze:
-#    build:
-#      dockerfile: facebook_ingestion/Dockerfile-ingestion
-#    container_name: facebook_ingestion
-#    environment:
-#      - SPARK_MASTER=spark://spark-iceberg:7077
-#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-#      # --- ADICIONE AS LINHAS ABAIXO ---
-#      - SPARK_CONF_spark.ui.prometheus.enabled=true
-#      - SPARK_CONF_spark.metrics.namespace=application
-#      - SPARK_CONF_spark.metrics.conf=/etc/metrics/spark-metrics.properties
-#      - SPARK_JARS_PACKAGES=org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,io.prometheus:simpleclient_spark_3.3:0.16.0
-#      - HOME=/tmp
-#    ports:
-#      - "4041:4040"
-#    # --- ADICIONE O VOLUME ABAIXO ---
-#    volumes:
-#      - ./base/configs/metrics:/etc/metrics
-#    depends_on:
-#      - kafka
-#      - spark-iceberg
-#    networks:
-#      - iceberg_net
-#    command: [ "python", "/app/kafka_to_bronze.py" ]
-#
-#  spark-x-kafka-to-bronze:
-#    build:
-#      dockerfile: x_ingestion/Dockerfile-ingestion
-#    container_name: x_ingestion
-#    environment:
-#      - SPARK_MASTER=spark://spark-iceberg:7077
-#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-#      # --- ADICIONE AS LINHAS ABAIXO ---
-#      - SPARK_CONF_spark.ui.prometheus.enabled=true
-#      - SPARK_CONF_spark.metrics.namespace=application
-#      - SPARK_CONF_spark.metrics.conf=/etc/metrics/spark-metrics.properties
-#      - SPARK_JARS_PACKAGES=org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0
-#    ports:
-#      - "4042:4040"
-#    # --- ADICIONE O VOLUME ABAIXO ---
-#    volumes:
-#      - ./base/configs/metrics:/etc/metrics
-#    depends_on:
-#      - kafka
-#      - spark-iceberg
-#    networks:
-#      - iceberg_net
-#    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
-#
+  spark-facebook-kafka-to-bronze:
+    build:
+      dockerfile: facebook_ingestion/Dockerfile-ingestion
+    container_name: facebook_ingestion
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPARK_MASTER: spark://spark-master:7077
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT: http://minio:9000
+      AWS_REGION: us-east-1
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+    depends_on:
+      - kafka
+      - spark-master
+    networks:
+      - iceberg_net
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+
+  spark-x-kafka-to-bronze:
+    build:
+      dockerfile: x_ingestion/Dockerfile-ingestion
+    container_name: x_ingestion
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPARK_MASTER: spark://spark-master:7077
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ENDPOINT: http://minio:9000
+      AWS_REGION: us-east-1
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+    depends_on:
+      - kafka
+      - spark-master
+    networks:
+      - iceberg_net
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -346,11 +347,13 @@ services:
       - prometheus
 
 volumes:
-  minio_data:
-  postgres_data:
+  spark-events:
   grafana_data:
   kafka_kraft_data:
+  airflow_data:
+  postgres_data:
 
 networks:
   iceberg_net:
     driver: bridge
+

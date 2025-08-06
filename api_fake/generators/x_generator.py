@@ -7,7 +7,7 @@ class XDataGenerator(DataGeneratorInterface):
         self.fake = Faker()
 
     def generate_post(self):
-        created_at = self.fake.date_time_between(start_date='-30d', end_date='now')
+        created_at = self.fake.date_time_between(start_date='-1d', end_date='now')
         return {
             "username": self.fake.user_name(),
             "display_name": self.fake.name(),

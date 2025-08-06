@@ -1,5 +1,7 @@
-from airflow import DAG
-from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+
+from airflow.operators.bash import BashOperator
+from airflow.models.dag import DAG
+
 from datetime import datetime, timedelta
 
 
@@ -13,28 +15,16 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# Definição do DAG
 with DAG(
-    dag_id='run_gold_batch',
-    default_args=default_args,
-    description='Processa os dados da camada Silver para Gold diariamente',
-    schedule_interval='0 3 * * *',
-    start_date=datetime(2024, 11, 22),
-    catchup=False,
-    tags=['gold', 'batch', 'diary']
+        dag_id='run_gold_batch',
+        start_date=datetime(2025, 1, 1),
+        catchup=False,
+        schedule='0 3 * * *',
+        tags=['gold', 'batch', 'diary']
 ) as dag:
-
-    # Task para executar o script PySpark
-    process_silver_to_gold = SparkSubmitOperator(
-        task_id='process_silver_to_gold',
-        application='/opt/airflow/dags/gold_batch.py',
-        name='Process Silver to Gold',
-        conn_id='spark_default',
-        executor_cores=4,
-        executor_memory='4g',
-        driver_memory='2g',
-        num_executors=2,
-        verbose=True,
+    process_silver_to_gold = BashOperator(
+        task_id="process_silver_to_gold",
+        bash_command="python /opt/airflow/dags/gold_batch.py --processing-date {{ ds }}"
     )
 
     process_silver_to_gold

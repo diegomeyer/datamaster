@@ -15,7 +15,7 @@ with DAG(
     dag_id='purge_bronze',
     default_args=default_args,
     description='Processa os dados da camada Silver para Gold diariamente',
-    schedule_interval='0 3 L * *',
+    schedule='0 3 L * *',
     start_date=datetime(2024, 11, 22),
     catchup=False,
     tags=['bronze', 'purge', 'monthly']

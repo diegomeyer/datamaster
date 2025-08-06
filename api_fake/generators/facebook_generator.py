@@ -7,7 +7,7 @@ class FacebookDataGenerator(DataGeneratorInterface):
         self.fake = Faker()
 
     def generate_post(self):
-        created_at = self.fake.date_time_between(start_date='-30d', end_date='now')
+        created_at = self.fake.date_time_between(start_date='-1d', end_date='now')
         return {
             "id": self.fake.uuid4(),
             "user_name": self.fake.name(),
