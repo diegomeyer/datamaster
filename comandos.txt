@@ -28,3 +28,7 @@ export PYTHONPATH=$(pwd)/streaming_ingestion
 pytest --cov=streaming_ingestion streaming_ingestion/tests/ -v
 
 
+Rodando testes airflow
+export KAFKA_BOOTSTRAP_SERVERS=xxxxx:9092;
+export PYTHONPATH=$(pwd)/airflow/dags
+pytest --cov=airflow/dags airflow/dags/tests/ -v

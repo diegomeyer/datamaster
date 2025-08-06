@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 
 default_args = {
@@ -20,11 +20,9 @@ with DAG(
     catchup=False,
     tags=['bronze', 'purge', 'monthly']
 ) as dag:
-    purge_bronze_job = SparkSubmitOperator(
-        task_id='purge_old_bronze_data',
-        application='/opt/airflow/dags/purge_bronze_data.py',
-        conn_id='spark_default',
-        env_vars={'HADOOP_USER_NAME': 'root'},
-        application_args=[],
-        dag=dag,
+    executar_script = BashOperator(
+        task_id="purge_old_bronze_data",
+        bash_command="python /opt/airflow/dags/purge_bronze_data.py"
     )
+
+    executar_script

@@ -12,8 +12,8 @@ with DAG(
         tags=['silver', 'iceberg'],
 ) as dag:
     executar_script = BashOperator(
-        task_id="executar_meu_script",
-        bash_command="python /opt/airflow/dags/silver_unified_batch.py"
+        task_id="silver_unified_batch",
+        bash_command="python /opt/airflow/dags/silver_unified_batch.py --processing-date {{ds}}"
     )
 
     executar_script

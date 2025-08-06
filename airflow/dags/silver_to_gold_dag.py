@@ -24,7 +24,7 @@ with DAG(
 ) as dag:
     process_silver_to_gold = BashOperator(
         task_id="process_silver_to_gold",
-        bash_command="python /opt/airflow/dags/gold_batch.py --processing-date {{ ds }}"
+        bash_command="python /opt/airflow/dags/silver_to_gold_batch.py --processing-date {{ ds }}"
     )
 
     process_silver_to_gold
