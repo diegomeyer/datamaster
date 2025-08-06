@@ -37,12 +37,7 @@ services:
       SPARK_WORKER_CORES: 1
       SPARK_RPC_AUTHENTICATION_ENABLED: "no"
       SPARK_RPC_ENCRYPTION_ENABLED: "no"
-      SPARK_LOCAL_DIRS: /tmp/spark-events
-      SPARK_WORKER_DIR: /opt/spark/work
       AWS_REGION: us-east-1
-    volumes:
-      - ./spark-events:/tmp/spark-events
-      - ./spark-worker-work:/opt/spark/work
     networks:
       - iceberg_net
 
@@ -149,29 +144,6 @@ services:
     networks:
       iceberg_net:
 
-#  iceberg-rest:
-#    image: tabulario/iceberg-rest:latest
-#    hostname: iceberg-rest
-#    container_name: iceberg-rest
-#    ports:
-#      - "8181:8181"
-#    environment:
-#      CATALOG_WAREHOUSE: s3a://warehouse/
-#      CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
-#      CATALOG_S3_ENDPOINT: http://172.21.0.4:9000
-#      CATALOG_S3_ACCESS_KEY_ID: minioadmin
-#      CATALOG_S3_SECRET_ACCESS_KEY: minioadmin
-#      CATALOG_S3_PATH_STYLE_ACCESS: "true"
-#      AWS_REGION: us-east-1
-#      AWS_ACCESS_KEY_ID: minioadmin
-#      AWS_SECRET_ACCESS_KEY: minioadmin
-#    depends_on:
-#      - minio
-#    extra_hosts:
-#      - "minio:172.23.0.5"
-#    networks:
-#      - iceberg_net
-
   jupyter:
     image: jupyter/pyspark-notebook:latest
     hostname: jupyter
@@ -261,7 +233,7 @@ services:
 
   spark-instagram-kafka-to-bronze:
     build:
-      dockerfile: instagram_ingestion/Dockerfile-ingestion
+      dockerfile: streaming_ingestion/Dockerfile-ingestion
     container_name: instagram_ingestion
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -276,11 +248,11 @@ services:
       - spark-master
     networks:
       - iceberg_net
-    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/ingestion/run_ingestion.py", "--source", "instagram"]
 
   spark-facebook-kafka-to-bronze:
     build:
-      dockerfile: facebook_ingestion/Dockerfile-ingestion
+      dockerfile: streaming_ingestion/Dockerfile-ingestion
     container_name: facebook_ingestion
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -295,11 +267,11 @@ services:
       - spark-master
     networks:
       - iceberg_net
-    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/ingestion/run_ingestion.py", "--source", "facebook" ]
 
   spark-x-kafka-to-bronze:
     build:
-      dockerfile: x_ingestion/Dockerfile-ingestion
+      dockerfile: streaming_ingestion/Dockerfile-ingestion
     container_name: x_ingestion
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -314,7 +286,7 @@ services:
       - spark-master
     networks:
       - iceberg_net
-    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/kafka_to_bronze.py" ]
+    command: [ "/app/wait-for-kafka.sh", "kafka", "python", "/app/ingestion/run_ingestion.py", "--source", "x" ]
 
   prometheus:
     image: prom/prometheus:latest
