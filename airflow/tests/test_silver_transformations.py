@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession, Row
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType
 
 # Importe as funções que você quer testar
-from silver_unified_batch import transform_facebook, transform_x
+from silver_unified_batch import transform_facebook, transform_x, transform_instagram
 
 def test_transform_facebook(spark: SparkSession):
     """
@@ -72,3 +72,36 @@ def test_transform_x(spark: SparkSession):
     # Verifica a estrutura aninhada do comentário
     assert result_data['comments'][0]['user'] == 'reply_user'
     assert result_data['comments'][0]['comment'] == 'nice tweet'
+
+def test_transform_instagram(spark: SparkSession):
+    """
+    Testa a função de transformação para dados do Instagram.
+    GIVEN: Um DataFrame com o schema de bronze do Instagram.
+    WHEN: A função transform_instagram é chamada.
+    THEN: O DataFrame resultante deve ter o schema unificado, incluindo uma coluna 'shares' nula.
+    """
+    # Arrange: Crie os dados de entrada
+    source_schema = StructType([
+        StructField("user_handle", StringType()),
+        StructField("caption", StringType()),
+        StructField("posted_at", StringType()),
+        StructField("likes", IntegerType()),
+        StructField("comments", ArrayType(StringType())),
+    ])
+    source_data = [("insta_user", "My photo", "2024-02-01T20:00:00Z", 150, ["cool!", "nice!"])]
+    source_df = spark.createDataFrame(source_data, source_schema)
+
+    # Act: Chame a função a ser testada
+    result_df = transform_instagram(source_df)
+    result_data = result_df.collect()[0]
+
+    # Assert: Verifique o resultado
+    expected_columns = ['author', 'content', 'post_date', 'likes', 'comments', 'shares', 'source']
+    assert result_df.columns == expected_columns
+    assert result_data['author'] == 'insta_user'
+    assert result_data['content'] == 'My photo'
+    assert result_data['source'] == 'instagram'
+    assert result_data['likes'] == 150
+    assert result_data['comments'] == ["cool!", "nice!"]
+    # Verifica a criação da coluna 'shares' como nula, que é um caso específico desta transformação
+    assert result_data['shares'] is None

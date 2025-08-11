@@ -1,10 +1,16 @@
 from generators.instagram_generator import InstagramDataGenerator
 
+
 def test_generate_post():
-    """Testa se o gerador de dados do Instagram cria um post válido."""
+    """
+    Testa a geração de um post do Instagram.
+    GIVEN: Uma instância do InstagramDataGenerator.
+    WHEN: O método generate_post é chamado.
+    THEN: O dicionário resultante deve conter todas as chaves esperadas e tipos corretos.
+    """
     generator = InstagramDataGenerator()
     post = generator.generate_post()
-    
+
     assert "id" in post
     assert "user_handle" in post
     assert "caption" in post

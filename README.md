@@ -205,6 +205,15 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 - O [Grafana](https://grafana.com/) exibe dashboards de monitoramento.
 - O Kafka Exporter expõe métricas detalhadas do Kafka para Prometheus.
 
+
+#### Detalhamento do Monitoramento
+Kafka, MiniO e expõem métricas para o Prometheus, que são visualizadas no Grafana.
+
+Dash kafka
+
+Dash Minio
+
+
 ### 5. Testes
 
 O projeto conta com testes unitários para garantir a qualidade dos componentes. Para executá-los, primeiro defina a variável de ambiente `PYTHONPATH` para o diretório do componente a ser testado e depois use o `pytest`.
@@ -218,13 +227,14 @@ O projeto conta com testes unitários para garantir a qualidade dos componentes.
 - Testes unitários para o processo de Streaming em [`streaming_ingestion/tests`](streaming_ingestion/tests).
 - Para rodar os testes:
     ```bash
+    export KAFKA_BOOTSTRAP_SERVERS=teste
     export PYTHONPATH=$(pwd)/streaming_ingestion
     pytest --cov=streaming_ingestion streaming_ingestion/tests/ -v
     ```
 - Testes unitários para as dags do airflow em [`airflow/tests`](airflow/tests).
 - Para rodar os testes:
     ```bash
-    export PYTHONPATH=$(pwd)/airflow
+    export PYTHONPATH=$(pwd)/airflow/dags
     pytest --cov=airflow airflow/tests/ -v
     ```
 
