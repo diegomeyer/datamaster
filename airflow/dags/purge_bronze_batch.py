@@ -74,7 +74,7 @@ if __name__ == "__main__":
         "bronze.x_posts"
         # Adicione outras tabelas silver aqui se necessário
     ]
-    RETENTION_DAYS_SILVER = 90  # Exemplo: reter dados na camada Silver por 90 dias
+    RETENTION_DAYS_SILVER = 7  # Exemplo: reter dados na camada Silver por 90 dias
 
     for table in SILVER_TABLES:
         purge_iceberg_table_data(spark, CATALOG_NAME, table, RETENTION_DAYS_SILVER)

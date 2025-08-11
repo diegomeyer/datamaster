@@ -16,7 +16,7 @@ default_args = {
 }
 
 with DAG(
-        dag_id='run_gold_batch',
+        dag_id='gold_aggregation',
         start_date=datetime(2025, 1, 1),
         catchup=False,
         schedule='0 3 * * *',

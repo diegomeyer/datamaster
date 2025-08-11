@@ -5,7 +5,7 @@ from airflow.models.dag import DAG
 import pendulum
 
 with DAG(
-        dag_id='batch_silver_social',
+        dag_id='silver_social',
         start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
         catchup=False,
         schedule=None,

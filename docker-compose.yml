@@ -14,11 +14,7 @@ services:
       SPARK_MODE: master
       SPARK_RPC_AUTHENTICATION_ENABLED: "no"
       SPARK_RPC_ENCRYPTION_ENABLED: "no"
-      SPARK_LOCAL_DIRS: /tmp/spark-events
-      SPARK_HISTORY_FS_LOG_DIRECTORY: /tmp/spark-events
       AWS_REGION: us-east-1
-    volumes:
-      - ./spark-events:/tmp/spark-events
     networks:
       - iceberg_net
 
@@ -106,8 +102,8 @@ services:
     networks:
       - iceberg_net
     volumes:
-      - ./base/configs/wait-for-kafka-sh.sh:/wait-for-kafka.sh
-    entrypoint: [ "/bin/sh", "/wait-for-kafka.sh", "kafka_exporter" ]
+      - ./base/configs/wait.sh:/wait.sh
+    entrypoint: [ "/bin/sh", "/wait.sh"]
 
   minio:
     image: minio/minio:latest
@@ -116,10 +112,16 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    volumes:
+      - minio_data:/data
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_PROMETHEUS_URL: http://prometheus:9090
+      MINIO_PROMETHEUS_JOB_ID: minio-job
+      MINIO_PROMETHEUS_AUTH_TYPE: public # Deixa o endpoint aberto DENTR
     command: server /data --console-address ":9001"
+
     networks:
       - iceberg_net
 
@@ -128,10 +130,12 @@ services:
       - minio
     image: minio/mc
     container_name: mc
+    volumes:
+      - minio_data:/data
     environment:
-      - AWS_ACCESS_KEY_ID=minioadmin
-      - AWS_SECRET_ACCESS_KEY=minioadmin
-      - AWS_REGION=us-east-1
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
     entrypoint: |
       /bin/sh -c "
         # Configurar alias para MinIO
@@ -171,9 +175,9 @@ services:
     image: postgres:13
     container_name: postgres
     environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./base/configs/postgres:/docker-entrypoint-initdb.d
@@ -186,6 +190,8 @@ services:
     build:
       dockerfile: airflow/Dockerfile-aiflow-spark
     container_name: airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: False
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -197,10 +203,6 @@ services:
       JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
       AWS_REGION: us-east-1
       AIRFLOW_CONN_SPARK_MASTER: spark://spark-master:7077
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags # Diretório para DAGS do Airflow
-      - airflow_data:/airflow
-      - ./base/configs/setup_connections.py:/opt/setup_connections.py
     ports:
       - "8082:8080" # Airflow Web UI
       - "8125:8125" # Metrics
@@ -215,7 +217,6 @@ services:
       airflow db migrate &&
       airflow connections create-default-connections &&
       airflow users create --username admin --password admin --firstname Admin --lastname Admin --role Admin --email admin@example.com &&
-      python /opt/setup_connections.py &&
       airflow scheduler & sleep 5 && airflow webserver"
 
   # Produtor Kafka para que gera os dados da API de
@@ -304,9 +305,8 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./base/configs/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
-      - ./base/configs/grafana/Hadoop-1733763131072.json:/etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
       - ./base/configs/grafana/Kafka Metrics-1733763119004.json:/etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
-      - ./base/configs/grafana/Spark-Applications-Dashboard.json:/etc/grafana/provisioning/dashboards/Spark-Applications-Dashboard.json
+      - ./base/configs/grafana/Minio-Dashboard.json:/etc/grafana/provisioning/dashboards/Minio-Dashboard.json
       - ./base/configs/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
       - "3000:3000" # Grafana UI
@@ -324,6 +324,7 @@ volumes:
   kafka_kraft_data:
   airflow_data:
   postgres_data:
+  minio_data:
 
 networks:
   iceberg_net:

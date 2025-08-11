@@ -186,6 +186,13 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 
 - Para governança de dados, uma DAG mensal [purge_bronze_dag.py](airflow/dags/purge_bronze_dag.py) é responsável por executar o script purge_bronze_data.py, que expurga dados antigos da camada Bronze, aplicando uma política de retenção de 90 dias.
 
+#### 2.5. Compactação de Small Files nas Tabelas Iceberg
+
+- Para garantir a performance e evitar o acúmulo de arquivos pequenos ("small files") nas tabelas Iceberg do Data Lake, o projeto conta com uma DAG dedicada de compactação automática.
+- A DAG [`compact_iceberg_small_files_dag.py`](airflow/dags/compact_iceberg_small_files_dag.py) utiliza o PythonOperator para executar periodicamente o script [`compact_iceberg_small_files_batch.py`](airflow/dags/compact_iceberg_small_files_batch.py), que realiza a operação de `rewrite_data_files` em todas as tabelas das camadas Bronze, Silver e Gold.
+- Essa compactação reduz a quantidade de arquivos pequenos no S3/MinIO, melhorando a performance das consultas e otimizando custos de armazenamento.
+- O processo é totalmente automatizado e pode ser facilmente ajustado para incluir novas tabelas ou alterar a periodicidade conforme a necessidade do projeto.
+
 
 ### 3. Estrutura do Data Lake
 - **Bronze**: Dados brutos, exatamente como recebidos.
@@ -218,7 +225,7 @@ O projeto conta com testes unitários para garantir a qualidade dos componentes.
 - Para rodar os testes:
     ```bash
     export PYTHONPATH=$(pwd)/airflow
-    pytest --cov=airflow/dags airflow/dags/tests/ -v
+    pytest --cov=airflow airflow/tests/ -v
     ```
 
 ---

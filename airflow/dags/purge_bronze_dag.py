@@ -21,8 +21,8 @@ with DAG(
     tags=['bronze', 'purge', 'monthly']
 ) as dag:
     executar_script = BashOperator(
-        task_id="purge_old_bronze_data",
-        bash_command="python /opt/airflow/dags/purge_bronze_data.py"
+        task_id="purge_old_bronze_batch",
+        bash_command="python /opt/airflow/dags/purge_bronze_batch.py"
     )
 
     executar_script

@@ -1,13 +1,5 @@
 apiVersion: 1
 providers:
-  - name: 'Hadoop Dashboard'
-    orgId: 1
-    folder: ''
-    type: file
-    disableDeletion: false
-    editable: true
-    options:
-      path: /etc/grafana/provisioning/dashboards/Hadoop-1733763131072.json
   - name: 'Kafka Dashboard'
     orgId: 1
     folder: ''
@@ -16,7 +8,6 @@ providers:
     editable: true
     options:
       path: /etc/grafana/provisioning/dashboards/Kafka Metrics-1733763119004.json
-  # ADICIONE ESTA NOVA ENTRADA ABAIXO
   - name: 'Spark Applications Dashboard'
     orgId: 1
     folder: ''
@@ -24,7 +15,7 @@ providers:
     disableDeletion: false
     editable: true
     options:
-      path: /etc/grafana/provisioning/dashboards/Spark-Applications-Dashboard.json
+      path: /etc/grafana/provisioning/dashboards/Minio-Dashboard.json
   - name: "Dashboards"
     orgId: 1
     folder: ""

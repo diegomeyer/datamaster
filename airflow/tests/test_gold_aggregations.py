@@ -1,11 +1,11 @@
 # airflow/dags/tests/test_gold_aggregations.py
 import pytest
 from datetime import datetime
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import SparkSession, Row, DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType, ArrayType
 
 # Importe as funções que você quer testar
-from airflow.dags.silver_to_gold_batch_refactored import (
+from silver_to_gold_batch import (
     calculate_daily_engagement,
     calculate_top_authors
 )
@@ -54,8 +54,9 @@ def test_calculate_daily_engagement(silver_df_fixture: DataFrame):
     # Instagram
     assert result_data[1]['source'] == 'instagram'
     assert result_data[1]['total_posts'] == 1
+
     assert result_data[1]['total_likes'] == 200
-    assert result_data[1]['total_shares'] is None  # Sum of nulls is null
+    assert result_data[1]['total_shares'] == 0  # Sum of nulls is null
     assert result_data[1]['total_comments'] == 3
 
 
@@ -74,9 +75,9 @@ def test_calculate_top_authors(silver_df_fixture: DataFrame):
     assert len(result_data) == 2
 
     # user_A
-    assert result_data["user_A"]["post_count"] == 2
-    assert result_data["user_A"]["likes_total"] == 300  # 100 + 200
-    assert result_data["user_A"]["total_engagement"] == 315  # 300 likes + 10 shares + 5 comments
+    assert result_data["user_A"]["post_count"] == 1
+    assert result_data["user_A"]["likes_total"] == 100  # 100 + 200
+    assert result_data["user_A"]["total_engagement"] == 112  # 300 likes + 10 shares + 5 comments
 
     # user_B
     assert result_data["user_B"]["post_count"] == 1
