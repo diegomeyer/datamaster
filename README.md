@@ -174,11 +174,11 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 
 - Este job consome os dados unificados da camada Silver e realiza agregações para gerar KPIs de negócio, como:
 
-    - Engajamento diário (total de posts, likes, compartilhamentos, comentários) por plataforma, na tabela Iceberg `hadoop.gold.engajamento_diario`.
+    - Engajamento diário (total de posts, likes, compartilhamentos, comentários) por plataforma, na tabela Iceberg `hadoop.gold.daily_engagement`.
 
-    - Ranking de autores com maior engajamento, na tabela Iceberg `hadoop.gold.top_autores`.
+    - Ranking de autores com maior engajamento, na tabela Iceberg `hadoop.gold.top_authors`.
 
-    - Distribuição de postagens por hora do dia, na tabela Iceberg `hadoop.gold.posts_por_hora`
+    - Distribuição de postagens por hora do dia, na tabela Iceberg `hadoop.gold.hourly_posts`
 
 - Os resultados são salvos em tabelas específicas na camada Gold, prontos para serem consumidos por ferramentas de análise.
 

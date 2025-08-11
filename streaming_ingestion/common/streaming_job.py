@@ -35,7 +35,8 @@ class KafkaToBronzeStreamer:
             .select("data.*")
 
         return df_parsed.withColumn("event_time", current_timestamp()) \
-            .withColumn("ingestion_date", date_format(col("event_time"), "yyyy-MM-dd"))
+            .withColumn("ingestion_date", date_format(col("event_time"), "yyyy-MM-dd")) \
+            .withColumn("processing_timestamp", current_timestamp())
 
     def _write_stream(self, df_transformed: DataFrame):
         """Escreve o DataFrame transformado na tabela Iceberg de destino."""

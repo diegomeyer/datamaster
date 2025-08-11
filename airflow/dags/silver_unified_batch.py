@@ -6,10 +6,7 @@ from typing import List, Dict, Callable
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import (
-    lit, col, to_timestamp, transform, struct, sha2, concat
-)
-from pyspark.sql.types import (
-    StructType, StructField, StringType, TimestampType, IntegerType, ArrayType
+    lit, col, to_timestamp, transform, struct, sha2, concat, current_timestamp, max as spark_max
 )
 
 from spark_utils import get_spark_session
@@ -74,9 +71,10 @@ def anonymize_authors(df: DataFrame) -> DataFrame:
 class SilverProcessor:
     """Orquestra o processo de leitura, transformação e escrita para a camada Silver."""
 
-    def __init__(self, spark: SparkSession, processing_date: str):
+    def __init__(self, spark: SparkSession):
         self.spark = spark
-        self.processing_date = processing_date
+        self.silver_table = "hadoop.silver.social_media"
+        # self.processing_date = processing_date
         # OCP: Para adicionar uma nova fonte, basta adicionar uma entrada neste dicionário.
         self.source_configs: Dict[str, Dict[str, any]] = {
             "facebook": {"table": "hadoop.bronze.facebook_posts", "transformer": transform_facebook},
@@ -84,25 +82,58 @@ class SilverProcessor:
             "x": {"table": "hadoop.bronze.x_posts", "transformer": transform_x},
         }
 
-    def _read_bronze_data(self, table_name: str) -> DataFrame:
+    def _get_last_processed_timestamp(self) -> str:
+        """Busca o último timestamp de processamento da tabela Silver."""
+        try:
+            # Verifica se a tabela existe antes de tentar ler
+            if not self.spark.catalog.tableExists(self.silver_table):
+                print(f"Tabela Silver '{self.silver_table}' não encontrada. Usando timestamp inicial padrão.")
+                return "1970-01-01 00:00:00"
+
+            print(f"Buscando último timestamp processado da tabela '{self.silver_table}'...")
+            last_timestamp = self.spark.table(self.silver_table).select(spark_max("processing_timestamp")).collect()[0][
+                0]
+            if last_timestamp:
+                print(f"Último timestamp encontrado: {last_timestamp}")
+                return str(last_timestamp)
+            else:
+                # Caso a tabela exista mas esteja vazia
+                print("Tabela Silver está vazia. Usando timestamp inicial padrão.")
+                return "1970-01-01 00:00:00"
+        except Exception as e:
+            print(f"Erro ao buscar último timestamp. Usando padrão. Erro: {e}")
+            return "1970-01-01 00:00:00"
+
+    def _read_bronze_data(self, table_name: str, start_timestamp: str, end_timestamp: str) -> DataFrame:
         """Lê dados da camada Bronze para a data de processamento especificada."""
-        print(f"Lendo da tabela Bronze '{table_name}' para a data '{self.processing_date}'...")
-        return self.spark.table(table_name).filter(col("ingestion_date") == self.processing_date)
+        print(f"Lendo da tabela '{table_name}' entre '{start_timestamp}' e '{end_timestamp}'...")
+        return self.spark.table(table_name).filter(
+            (col("processing_timestamp") > lit(start_timestamp).cast("timestamp")) &
+            (col("processing_timestamp") <= lit(end_timestamp).cast("timestamp"))
+        )
 
     def run(self):
         """Executa o pipeline completo de Bronze para Silver."""
+
+        """Executa o pipeline completo de Bronze para Silver."""
+        start_timestamp = self._get_last_processed_timestamp()
+        # O timestamp final é o momento exato em que este job começou
+        end_timestamp_df = self.spark.sql("SELECT current_timestamp() as now")
+        end_timestamp = end_timestamp_df.collect()[0]['now']
+
         transformed_dfs: List[DataFrame] = []
 
         for source, config in self.source_configs.items():
             try:
-                bronze_df = self._read_bronze_data(config["table"])
+                bronze_df = self._read_bronze_data(config["table"], start_timestamp, str(end_timestamp))
                 if bronze_df.rdd.isEmpty():
-                    print(f"Nenhum dado novo para a fonte {source}.")
+                    print(f"Nenhum dado novo para a fonte {source} no intervalo de tempo.")
                     continue
 
                 transformer: Callable[[DataFrame], DataFrame] = config["transformer"]
                 transformed_df = transformer(bronze_df)
                 transformed_dfs.append(transformed_df)
+                print(transformed_df.count())
             except Exception as e:
                 print(f"AVISO: Falha ao processar a fonte {source}. Erro: {e}")
 
@@ -117,30 +148,23 @@ class SilverProcessor:
 
         # Aplica transformações finais e escreve
         final_df = anonymize_authors(unified_df)
-        final_df = final_df.withColumn("processing_date", lit(self.processing_date))
-
+        final_df = final_df.withColumn("processing_timestamp", lit(end_timestamp))\
+                   .withColumn("ingestion_date", col("processing_timestamp").cast("date"))
+        print(final_df.count())
         print("Gravando dados unificados na camada Silver...")
         final_df.write \
             .format("iceberg") \
             .mode("append") \
-            .partitionBy("processing_date") \
+            .partitionBy("ingestion_date") \
             .saveAsTable("hadoop.silver.social_media")
         print("Dados gravados com sucesso na camada Silver.")
 
 
 def main():
     """Ponto de entrada do script."""
-    parser = argparse.ArgumentParser(description="Processa dados da camada Bronze para a Silver para uma data específica.")
-    parser.add_argument(
-        '--processing-date',
-        required=True,
-        help='A data de processamento no formato YYYY-MM-DD.'
-    )
-    args = parser.parse_args()
+    spark = get_spark_session("SocialMediaSilver")
 
-    spark = get_spark_session("SocialMediaSilverR")
-
-    processor = SilverProcessor(spark, args.processing_date)
+    processor = SilverProcessor(spark)
     processor.run()
 
     spark.stop()

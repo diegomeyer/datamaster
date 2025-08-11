@@ -38,9 +38,9 @@ def main():
         'hadoop.bronze.facebook_posts',
         'hadoop.bronze.x_posts',
         'hadoop.silver.social_media',
-        'hadoop.gold.engajamento_diario',
-        'hadoop.gold.top_autores',
-        'hadoop.gold.posts_por_hora',
+        'hadoop.gold.daily_engagement',
+        'hadoop.gold.top_authors',
+        'hadoop.gold.hourly_posts',
     ]
     small_files_batch(spark, 'hadoop', tables)
 

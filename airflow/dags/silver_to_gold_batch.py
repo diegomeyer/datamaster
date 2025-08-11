@@ -52,15 +52,15 @@ class GoldProcessor:
         # OCP: Para adicionar uma nova agregação, basta adicionar uma entrada neste dicionário.
         # O código do método `run` não precisa ser modificado.
         self.aggregations_config: Dict[str, Dict] = {
-            "engajamento_diario": {
+            "daily_engagement": {
                 "calculator": calculate_daily_engagement,
                 "partitions": ["source", "post_day"]
             },
-            "top_autores": {
+            "top_authors": {
                 "calculator": calculate_top_authors,
                 "partitions": ["source"]
             },
-            "posts_por_hora": {
+            "hourly_posts": {
                 "calculator": calculate_hourly_distribution,
                 "partitions": ["source"]
             },
@@ -70,7 +70,7 @@ class GoldProcessor:
         """Lê os dados da camada Silver para a data de processamento especificada."""
         print(f"Lendo dados da tabela Silver para a data: {self.processing_date}")
         return self.spark.table("hadoop.silver.social_media").filter(
-            col("processing_date") == self.processing_date
+            col("ingestion_date") == self.processing_date
         ).cache()  # Adiciona cache para otimizar, já que o DF será lido várias vezes
 
     def run(self):

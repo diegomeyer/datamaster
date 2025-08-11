@@ -121,7 +121,6 @@ services:
       MINIO_PROMETHEUS_JOB_ID: minio-job
       MINIO_PROMETHEUS_AUTH_TYPE: public # Deixa o endpoint aberto DENTR
     command: server /data --console-address ":9001"
-
     networks:
       - iceberg_net
 
