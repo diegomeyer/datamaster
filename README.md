@@ -35,6 +35,11 @@ O pipeline é composto por:
 
 ### Tecnologias Utilizadas
 
+![docs/datamaster-resumido.png](docs/datamaster-resumido.png)
+
+A arquitetura é organizadas por camadas funcionais. O diagrama acima apresenta os principais serviços envolvidos, agrupados por suas responsabilidades .
+
+
 | Tecnologia         | Função na Arquitetura| 
 |--------------------|----------------------|
 | **Docker Compose** | Orquestração dos containers | 
@@ -47,6 +52,7 @@ O pipeline é composto por:
 | **Jupyter**        | Exploração/análise de dados | 
 | **PostgreSQL**     | Banco de dados do Airflow | 
 | **Kafka Exporter** | Exporta métricas do Kafka para Prometheus | 
+
 
 ### Por que cada tecnologia?
 
@@ -141,25 +147,30 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 - Facilita o acompanhamento visual do funcionamento do pipeline.
 - Permite rápida identificação de problemas e tomada de decisão baseada em dados.
 - Dashboards podem ser compartilhados com toda a equipe para colaboração e transparência.
+
+
+
 ---
 
 ## III. 📝 Explicação sobre o Case Desenvolvido
 
-### 1. Extração de Dados
+Arquitetura detalhada
+
+![docs/datamaster_detalhado.png](docs/datamaster_detalhado.png)
+
+#### 1 - Geração de Dados Fakes
 - O serviço [`api_fake/main.py`](api_fake/main.py) gera continuamente dados sintéticos que simulam posts das redes sociais Facebook, Instagram e X.
 
  - Ele utiliza geradores de dados específicos para cada plataforma (ex: facebook_generator.py) e os publica em seus respectivos tópicos no Kafka: `instagram-post`, `facebook-post`, `x-post`.
 
-### 2. Processamento e Armazenamento
-
-#### 2.1. Ingestão para a Camada Bronze
+#### 2 - Ingestão para a Camada Bronze
 - Três jobs do Spark Streaming [run_ingestion.py](streaming_ingestion/run_ingestion.py) são iniciados, um para cada rede social.
 
 - Cada job consome as mensagens de seu tópico Kafka específico, adiciona metadados de ingestão (como ingestion_date) e escreve os dados brutos como tabelas Iceberg na camada Bronze do Data Lake, particionados por data.
 
 - O processo utiliza checkpoints para garantir a tolerância a falhas e o processamento "exactly-once".
 
-#### 2.2. Transformação para a Camada Silver
+#### 3 - Transformação para a Camada Silver
 - Uma DAG do Airflow [`silver_unified_dag.py`](airflow/dags/silver_unified_dag.py) orquestra a execução de 10 em 10 minutos do script [`silver_unified_batch.py`](airflow/dags/silver_unified_batch.py).
 
 - Este script lê os dados brutos de todas as fontes da camada Bronze para uma data de processamento específica.
@@ -168,7 +179,7 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 
 - Nesta fase, o campo author é anonimizado usando uma função de hashing (SHA-256 com salt) para proteger a identidade dos usuários, em conformidade com as boas práticas da LGPD.
 
-#### 2.3. Agregação para a Camada Gold
+#### 4 - Agregação para a Camada Gold
 
 - Uma DAG do Airflow [`silver_to_gold_dag.py`](airflow/dags/silver_to_gold_dag.py) orquestra a execução diaria do script [`silver_to_gold_batch.py`](airflow/dags/silver_to_gold_batch.py).
 
@@ -182,29 +193,33 @@ O **Grafana** é utilizado para visualização e criação de dashboards interat
 
 - Os resultados são salvos em tabelas específicas na camada Gold, prontos para serem consumidos por ferramentas de análise.
 
-#### 2.4. Expurgo de Dados
+#### 5 - Expurgo de Dados
 
 - Para governança de dados, uma DAG mensal [purge_bronze_dag.py](airflow/dags/purge_bronze_dag.py) é responsável por executar o script purge_bronze_data.py, que expurga dados antigos da camada Bronze, aplicando uma política de retenção de 90 dias.
 
-#### 2.5. Compactação de Small Files nas Tabelas Iceberg
+#### 6. Compactação de Small Files nas Tabelas Iceberg
 
 - Para garantir a performance e evitar o acúmulo de arquivos pequenos ("small files") nas tabelas Iceberg do Data Lake, o projeto conta com uma DAG dedicada de compactação automática.
 - A DAG [`compact_iceberg_small_files_dag.py`](airflow/dags/compact_iceberg_small_files_dag.py) utiliza o PythonOperator para executar periodicamente o script [`compact_iceberg_small_files_batch.py`](airflow/dags/compact_iceberg_small_files_batch.py), que realiza a operação de `rewrite_data_files` em todas as tabelas das camadas Bronze, Silver e Gold.
 - Essa compactação reduz a quantidade de arquivos pequenos no S3/MinIO, melhorando a performance das consultas e otimizando custos de armazenamento.
 - O processo é totalmente automatizado e pode ser facilmente ajustado para incluir novas tabelas ou alterar a periodicidade conforme a necessidade do projeto.
 
+#### 7 - Envio de Metrica
+Kafka e Minio enviam metricas pra o prometheus que são consumidos pelo grafana.
 
-### 3. Estrutura do Data Lake
+#### 8 - Ferramenta de Exploração de Dados
+A adoção do Jupyter é motivada pela necessidade de um ambiente interativo para a exploração de dados e o desenvolvimento ágil de análises. Ele permite que nossos cientistas e engenheiros consultem o data lakehouse de forma iterativa, validando hipóteses e prototipando lógicas complexas com feedback visual e imediato antes da produção.
+
+### Estrutura do Data Lake
 - **Bronze**: Dados brutos, exatamente como recebidos.
 - **Silver**: Dados limpos, normalizados e enriquecidos.
 - **Gold**: Dados agregados e métricas de negócio, otimizados para consumo.
 
-### 4. Orquestração e Monitoramento
+### Orquestração e Monitoramento
 - O [Airflow](airflow/) agenda e monitora os fluxos de ingestão, transformação e agregação.
 - O [Prometheus](https://prometheus.io/) coleta métricas de performance dos containers e jobs.
 - O [Grafana](https://grafana.com/) exibe dashboards de monitoramento.
 - O Kafka Exporter expõe métricas detalhadas do Kafka para Prometheus.
-
 
 #### Detalhamento do Monitoramento
 Kafka, MiniO e expõem métricas para o Prometheus, que são visualizadas no Grafana.
@@ -214,7 +229,7 @@ Dash kafka
 Dash Minio
 
 
-### 5. Testes
+### Testes
 
 O projeto conta com testes unitários para garantir a qualidade dos componentes. Para executá-los, primeiro defina a variável de ambiente `PYTHONPATH` para o diretório do componente a ser testado e depois use o `pytest`.
 
