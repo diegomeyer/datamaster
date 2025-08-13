@@ -26,13 +26,6 @@ O pipeline é composto por:
 6. **Orquestração**: Airflow agenda e automatiza os fluxos.
 7. **Monitoramento**: Prometheus coleta métricas e Grafana exibe dashboards.
 
-### Diagrama Simplificado
-
-```
-[api_fake/Faker] --> [Kafka] --> [PySpark] --> [HDFS Bronze] --> [Airflow] --> [HDFS Silver/Gold]
-                                                           |--> [Prometheus/Grafana]
-```
-
 ### Tecnologias Utilizadas
 
 ![docs/datamaster-resumido.png](docs/datamaster-resumido.png)
