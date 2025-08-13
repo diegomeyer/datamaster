@@ -204,11 +204,13 @@ Arquitetura detalhada
 - Essa compactação reduz a quantidade de arquivos pequenos no S3/MinIO, melhorando a performance das consultas e otimizando custos de armazenamento.
 - O processo é totalmente automatizado e pode ser facilmente ajustado para incluir novas tabelas ou alterar a periodicidade conforme a necessidade do projeto.
 
-#### 7 - Envio de Metrica
-Kafka e Minio enviam metricas pra o prometheus que são consumidos pelo grafana.
+#### 7 - Envio de Metrica e Dashboards
+- Kafka Exporter envia metricas relacionadas ao Kafka para o Prometheus
+- Minio enviam metricas para o prometheus.
+- As metricas são consumidas via Dashboard no Grafan
 
 #### 8 - Ferramenta de Exploração de Dados
-A adoção do Jupyter é motivada pela necessidade de um ambiente interativo para a exploração de dados e o desenvolvimento ágil de análises. Ele permite que nossos cientistas e engenheiros consultem o data lakehouse de forma iterativa, validando hipóteses e prototipando lógicas complexas com feedback visual e imediato antes da produção.
+- A adoção do Jupyter é motivada pela necessidade de um ambiente interativo para a exploração de dados e o desenvolvimento ágil de análises. Ele permite que nossos cientistas e engenheiros consultem o data lakehouse de forma iterativa, validando hipóteses e prototipando lógicas complexas com feedback visual e imediato antes da produção.
 
 ### Estrutura do Data Lake
 - **Bronze**: Dados brutos, exatamente como recebidos.
