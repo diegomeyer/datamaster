@@ -30,7 +30,7 @@ O pipeline é composto por:
 
 ![docs/datamaster-resumido.png](docs/datamaster-resumido.png)
 
-A arquitetura é organizadas por camadas funcionais. O diagrama acima apresenta os principais serviços envolvidos, agrupados por suas responsabilidades .
+A arquitetura é organizada por camadas funcionais. O diagrama acima apresenta os principais serviços envolvidos, agrupados por suas responsabilidades.
 
 
 | Tecnologia         | Função na Arquitetura| 
@@ -106,7 +106,7 @@ O **Apache Airflow** é responsável por orquestrar e automatizar todo o pipelin
 
 **Vantagens no contexto do projeto**
 - Garante rastreabilidade e reprodutibilidade dos fluxos de dados.
-- Permite rápida identificação e reexecução de tarefas com falha.
+- Permite a rápida identificação e reexecução de tarefas com falha.
 - Facilita a integração e automação de todo o ciclo de ingestão, processamento e agregação.
 
 ---
@@ -203,7 +203,7 @@ Arquitetura detalhada
 - As metricas são consumidas via Dashboard no Grafan
 
 #### 8 - Ferramenta de Exploração de Dados
-- A adoção do Jupyter é motivada pela necessidade de um ambiente interativo para a exploração de dados e o desenvolvimento ágil de análises. Ele permite que nossos cientistas e engenheiros consultem o data lakehouse de forma iterativa, validando hipóteses e prototipando lógicas complexas com feedback visual e imediato antes da produção.
+- A adoção do Jupyter é motivada pela necessidade de um ambiente interativo para exploração de dados e desenvolvimento ágil de análises. Ele permite que cientistas e engenheiros consultem o data lakehouse de forma iterativa, validem hipóteses e prototipem lógicas complexas com feedback visual e imediato antes da produção.
 
 ### Estrutura do Data Lake
 - **Bronze**: Dados brutos, exatamente como recebidos.
@@ -217,16 +217,20 @@ Arquitetura detalhada
 - O Kafka Exporter expõe métricas detalhadas do Kafka para Prometheus.
 
 #### Detalhamento do Monitoramento
-Kafka, MiniO e expõem métricas para o Prometheus, que são visualizadas no Grafana.
+Kafka, MinIO expõe métricas para o Prometheus, que são visualizadas no Grafana
 
-Dash kafka
+Metricas para Kafka
 
-Dash Minio
+![docs/kafka-dash.png](docs/kafka-dash.png)
 
 
+Metricas MiniO
+![docs/minio-dash.png](docs/minio-dash.png)
+
+Com essas métricas é possível acompanhar a saúde das aplicações e o fluxo de mensagens.
 ### Testes
 
-O projeto conta com testes unitários para garantir a qualidade dos componentes. Para executá-los, primeiro defina a variável de ambiente `PYTHONPATH` para o diretório do componente a ser testado e depois use o `pytest`.
+O projeto conta com testes unitários para garantir a qualidade dos componentes. Para executá-los, defina primeiro a variável de ambiente   `PYTHONPATH` para o diretório do componente a ser testado e depois use o `pytest`.
 
 - Testes unitários para API Fake em [`api_fake/tests`](api_fake/tests).
 - Para rodar os testes:
