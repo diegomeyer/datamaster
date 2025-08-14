@@ -16,7 +16,7 @@ def get_spark_session(app_name: str) -> SparkSession:
         .config("spark.sql.catalog.hadoop", "org.apache.iceberg.spark.SparkCatalog") \
         .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")\
         .config("spark.sql.catalog.hadoop.type", "hadoop") \
-        .config("spark.sql.catalog.hadoop.warehouse", "s3a://warehouse/") \
+        .config("spark.sql.catalog.hadoop.warehouse", "s3a://datalake/") \
         .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
         .config("spark.hadoop.fs.s3a.access.key", os.getenv("MINIO_ROOT_USER", "minioadmin")) \
         .config("spark.hadoop.fs.s3a.secret.key", os.getenv("MINIO_ROOT_PASSWORD", "minioadmin")) \

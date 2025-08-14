@@ -50,7 +50,7 @@ X_SCHEMA = StructType([
 
 # --- Dicionário de Configuração Central ---
 
-S3_BUCKET_NAME = "warehouse"
+S3_BUCKET_NAME = "datalake"
 
 SOURCE_CONFIGS = {
     "facebook": {

@@ -140,8 +140,8 @@ services:
         # Configurar alias para MinIO
         mc alias set myminio http://minio:9000 minioadmin minioadmin
         
-        # Criar bucket warehouse se não existir
-        mc mb myminio/warehouse --ignore-existing
+        # Criar bucket datalake se não existir
+        mc mb myminio/datalake --ignore-existing
         tail -f /dev/null
       "
     networks:

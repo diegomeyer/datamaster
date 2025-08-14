@@ -222,12 +222,13 @@ Arquitetura detalhada
 #### Detalhamento do Monitoramento
 Kafka, MinIO expõe métricas para o Prometheus, que são visualizadas no Grafana
 
-Metricas para Kafka
+Métricas para Kafka
 
 ![docs/kafka-dash.png](https://github.com/diegomeyer/datamaster/blob/feature/iceberg/docs/kafka-dash.png?raw=true)
 
 
-Metricas MiniO
+Métricas MiniO
+
 ![docs/minio-dash.png](https://github.com/diegomeyer/datamaster/blob/feature/iceberg/docs/minio-dash.png?raw=true)
 
 Com essas métricas é possível acompanhar a saúde das aplicações e o fluxo de mensagens.
