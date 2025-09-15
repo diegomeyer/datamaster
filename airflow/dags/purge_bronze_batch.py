@@ -7,7 +7,11 @@ from spark_utils import get_spark_session
 
 # Supondo que você tenha o get_spark_session em um utilitário
 # from spark_utils import get_spark_session
-
+ delete_colum = {
+    'bronze.facebook_posts': 'created_at',
+    'bronze.instagram_posts': 'posted_at',
+    'bronze.x_posts': 'created_at',
+}
 def purge_iceberg_table_data(spark: SparkSession, catalog_name: str, table_name: str, retention_days: int):
     """
     Executa o expurgo de dados em uma tabela Apache Iceberg usando os procedimentos do sistema.
@@ -20,7 +24,22 @@ def purge_iceberg_table_data(spark: SparkSession, catalog_name: str, table_name:
     full_table_identifier = f"{catalog_name}.{table_name}"
     print(f"\n--- Iniciando expurgo para a tabela Iceberg: {full_table_identifier} ---")
 
-    # 1. Expirar Snapshots Antigos
+
+    # 1. Apaga linhas antigas (usa equality/position deletes)
+    print(f"Retendo dados dos últimos {retention_days} dias.")
+    try:
+        expire_sql = f""" DELETE FROM {full_table_identifier} WHERE {delete_colum[table_name]} < date_sub(current_date(), {retention_days})"""
+        print("Executando 'Delete'")
+        result_df = spark.sql(expire_sql)
+        result_df.show(truncate=False)
+        print("'Delete' concluído com sucesso.")
+
+    except Exception as e:
+        print(f"Erro ao executar 'Delete' para a tabela {full_table_identifier}: {e}")
+        return
+
+
+    # 2. Expirar Snapshots Antigos
     # Calcula o timestamp de corte. Snapshots mais antigos que esta data serão removidos.
     cutoff_dt = datetime.utcnow() - timedelta(days=retention_days)
     cutoff_timestamp_str = cutoff_dt.strftime('%Y-%m-%d %H:%M:%S')
@@ -34,7 +53,7 @@ def purge_iceberg_table_data(spark: SparkSession, catalog_name: str, table_name:
             CALL {catalog_name}.system.expire_snapshots(
                 table => '{full_table_identifier}',
                 older_than => TIMESTAMP '{cutoff_timestamp_str}',
-                retain_last => 10
+                retain_last => 1
             )
         """
         print("Executando 'expire_snapshots'...")
@@ -47,36 +66,36 @@ def purge_iceberg_table_data(spark: SparkSession, catalog_name: str, table_name:
         # Continua para a próxima etapa ou tabela, dependendo da sua política de falha
         return
 
-    # 2. Deletar Arquivos Órfãos
+    # 3. Deletar Arquivos Órfãos
     # Esta etapa deleta fisicamente os arquivos que não são mais referenciados por nenhum snapshot.
     print("\nIniciando a deleção de arquivos órfãos...")
     try:
-        delete_sql = f"CALL {catalog_name}.system.delete_orphan_files(table => '{full_table_identifier}')"
-        print("Executando 'delete_orphan_files'...")
+        delete_sql = f"CALL {catalog_name}.system.remove_orphan_files(table => '{full_table_identifier}')"
+        print("Executando 'remove_orphan_files'...")
         result_df = spark.sql(delete_sql)
         result_df.show(truncate=False)
-        print("'delete_orphan_files' concluído com sucesso.")
+        print("'remove_orphan_files' concluído com sucesso.")
 
     except Exception as e:
-        print(f"Erro ao executar 'delete_orphan_files' para a tabela {full_table_identifier}: {e}")
+        print(f"Erro ao executar 'remove_orphan_files' para a tabela {full_table_identifier}: {e}")
 
     print(f"--- Expurgo para a tabela {full_table_identifier} finalizado. ---")
 
 
 if __name__ == "__main__":
-    spark = get_spark_session("SilverIcebergPurger")
+    spark = get_spark_session("BronzeIcebergPurger")
 
     # Defina suas tabelas Silver e políticas de retenção
     CATALOG_NAME = "hadoop"
-    SILVER_TABLES = [
+    BRONZE_TABLES = [
         "bronze.facebook_posts",
         "bronze.instagram_posts",
         "bronze.x_posts"
         # Adicione outras tabelas silver aqui se necessário
     ]
-    RETENTION_DAYS_SILVER = 7  # Exemplo: reter dados na camada Silver por 90 dias
+    RETENTION_DAYS_BRONZE= 7  # Exemplo: reter dados na camada Silver por 90 dias
 
-    for table in SILVER_TABLES:
-        purge_iceberg_table_data(spark, CATALOG_NAME, table, RETENTION_DAYS_SILVER)
+    for table in BRONZE_TABLES:
+        purge_iceberg_table_data(spark, CATALOG_NAME, table, RETENTION_DAYS_BRONZE)
 
     spark.stop()
